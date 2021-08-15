@@ -13,6 +13,11 @@ add_executable(tangram
   platforms/rpi/src/context.cpp
   platforms/rpi/src/main.cpp
   platforms/rpi/src/rpiPlatform.cpp
+  platforms/rpi/src/gps.cpp
+  platforms/rpi/src/hud/hud.cpp
+  platforms/rpi/src/hud/button.cpp
+  platforms/rpi/src/hud/slideRot.cpp
+  platforms/rpi/src/hud/slideZoom.cpp
   platforms/common/urlClient.cpp
   platforms/common/linuxSystemFontHelper.cpp
   platforms/common/platform_gl.cpp
@@ -22,6 +27,7 @@ target_include_directories(tangram
   PRIVATE
   platforms/common
   platforms/rpi/src
+  platforms/rpi/src/hud
   ${FONTCONFIG_INCLUDE_DIRS}
   /opt/vc/include/
   /opt/vc/include/interface/vcos/pthreads
@@ -35,6 +41,7 @@ target_link_libraries(tangram
   curl
   pthread
   rt
+  atomic
   /opt/vc/lib/libbcm_host.so
   /opt/vc/lib/libbrcmEGL.so
   /opt/vc/lib/libbrcmGLESv2.so
