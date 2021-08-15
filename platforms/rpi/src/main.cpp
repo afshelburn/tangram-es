@@ -16,6 +16,8 @@
 #include <sys/shm.h>
 #include <termios.h>
 
+Hud hud;
+
 #define KEY_ESC      27     // esc
 #define KEY_ZOOM_IN  61     // =
 #define KEY_ZOOM_OUT 45     // -
@@ -44,6 +46,7 @@ struct LaunchOptions {
     float rotation = 0.0f;
     float tilt = 0.0f;
     bool hasLocationSet = false;
+    bool drawCursor = false;
 };
 
 LaunchOptions getLaunchOptions(int argc, char **argv) {
@@ -76,6 +79,8 @@ LaunchOptions getLaunchOptions(int argc, char **argv) {
             options.tilt = std::stof(argValue);
         } else if (argName == "-r" || argName == "--rotation") {
             options.rotation = std::stof(argValue);
+        } else if (argName == "-m" || argName == "--mouse_cursor") {
+            options.drawCursor = true;
         }
     }
     return options;
@@ -147,6 +152,8 @@ int main(int argc, char **argv) {
 
     Url sceneUrl = baseUrl.resolve(Url(options.sceneFilePath));
 
+	hud.setDrawCursor(options.drawCursor);
+	
     map = std::make_unique<Map>(std::make_unique<RpiPlatform>(urlClientOptions));
     map->loadScene(sceneUrl.string(), !options.hasLocationSet, updates);
     map->setupGL();
@@ -169,6 +176,7 @@ int main(int argc, char **argv) {
             setRenderRequest(false);
             map->update(dt);
             map->render();
+            hud.draw();
             swapSurface();
         }
     }
@@ -222,9 +230,11 @@ void onMouseClick(float _x, float _y, int _button) {
 
 void onMouseDrag(float _x, float _y, int _button) {
     if( _button == 1 ){
-
-        map->handlePanGesture(_x - getMouseVelX(), _y + getMouseVelY(), _x, _y);
-
+		if (hud.isInUse()){
+            hud.cursorDrag(_x,_y,_button);
+        } else {
+        	map->handlePanGesture(_x - getMouseVelX(), _y + getMouseVelY(), _x, _y);
+		}
     } else if( _button == 2 ){
         if ( getKeyPressed() == 'r') {
             float scale = -0.05;
@@ -244,6 +254,7 @@ void onMouseDrag(float _x, float _y, int _button) {
 }
 
 void onMouseRelease(float _x, float _y) {
+	hud.cursorRelease(_x,_y);
     setRenderRequest(true);
 }
 
