@@ -5,7 +5,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-#include "util/vertexLayout.h"
+#include "gl/vertexLayout.h"
 #include "util/geom.h"
 
 void Button::init(){
@@ -41,18 +41,18 @@ void Button::init(){
         gl_FragColor = vec4(vec3(1.0),v_alpha)*(mask.x*mask.y);
     });
 
-    m_fixShader = std::shared_ptr<ShaderProgram>(new ShaderProgram());
+    m_fixShader = std::shared_ptr<Tangram::ShaderProgram>(new Tangram::ShaderProgram());
     m_fixShader->setSourceStrings(frag, fixVertShader);
 
     {
         float cornersWidth = 10.;
         float crossWidth = 5.;
 
-        std::shared_ptr<VertexLayout> vertexLayout = std::shared_ptr<VertexLayout>(new VertexLayout({
+        std::shared_ptr<Tangram::VertexLayout> vertexLayout = std::shared_ptr<Tangram::VertexLayout>(new Tangram::VertexLayout({
             {"a_position", 2, GL_FLOAT, false, 0}
         }));
         std::vector<LineVertex> vertices;
-        std::vector<int> indices;
+        std::vector<short unsigned int> indices;
 
         // Cross
         glm::vec3 center = getCenter();
@@ -96,8 +96,12 @@ void Button::init(){
         indices.push_back(14); indices.push_back(15);
 
         std::shared_ptr<HudMesh> mesh(new HudMesh(vertexLayout, GL_LINES));
-        mesh->addVertices(std::move(vertices), std::move(indices));
-        mesh->compileVertexBuffer();
+        Tangram::MeshData<LineVertex> md;
+        md.indices = indices;
+        md.vertices = vertices;
+        mesh->compile(md);
+        //mesh->addVertices(std::move(vertices), std::move(indices));
+        //mesh->compileVertexBuffer();
 
         m_fixMesh = mesh;
     } 

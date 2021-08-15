@@ -1,22 +1,22 @@
 #pragma once
 
 #include "glm/glm.hpp"
-#include "util/typedMesh.h"
+#include "gl/mesh.h"
 #include "util/geom.h"
 
 struct LineVertex {
     GLfloat x;
     GLfloat y;
 };
-typedef TypedMesh<LineVertex> HudMesh;
+typedef Tangram::Mesh<LineVertex> HudMesh;
 
 inline std::shared_ptr<HudMesh> getCrossMesh(float width){
     
-    std::shared_ptr<VertexLayout> vertexLayout = std::shared_ptr<VertexLayout>(new VertexLayout({
+    std::shared_ptr<Tangram::VertexLayout> vertexLayout = std::shared_ptr<Tangram::VertexLayout>(new Tangram::VertexLayout({
         {"a_position", 2, GL_FLOAT, false, 0}
     }));
     std::vector<LineVertex> vertices;
-    std::vector<int> indices;
+    std::vector<short unsigned int> indices;
 
     vertices.push_back({ -width, 0.0f});
     vertices.push_back({ width, 0.0f});
@@ -27,19 +27,23 @@ inline std::shared_ptr<HudMesh> getCrossMesh(float width){
     indices.push_back(2); indices.push_back(3);
 
     std::shared_ptr<HudMesh> mesh(new HudMesh(vertexLayout, GL_LINES));
-    mesh->addVertices(std::move(vertices), std::move(indices));
-    mesh->compileVertexBuffer();
+    Tangram::MeshData<LineVertex> md;//(indices, vertices);
+    md.indices = indices;
+    md.vertices = vertices;
+    mesh->compile(md);
+    //mesh->addVertices(std::move(vertices), std::move(indices));
+    //mesh->compileVertexBuffer();
 
     return mesh;
 }
 
 inline std::shared_ptr<HudMesh> getVerticalRulerMesh(float min, float max, float step, float width){
     
-    std::shared_ptr<VertexLayout> vertexLayout = std::shared_ptr<VertexLayout>(new VertexLayout({
+    std::shared_ptr<Tangram::VertexLayout> vertexLayout = std::shared_ptr<Tangram::VertexLayout>(new Tangram::VertexLayout({
         {"a_position", 2, GL_FLOAT, false, 0}
     }));
     std::vector<LineVertex> vertices;
-    std::vector<int> indices;
+    std::vector<short unsigned int> indices;
 
     float lenght = max-min;
     int nLines = lenght/step;
@@ -53,19 +57,23 @@ inline std::shared_ptr<HudMesh> getVerticalRulerMesh(float min, float max, float
     }
 
     std::shared_ptr<HudMesh> mesh(new HudMesh(vertexLayout, GL_LINES));
-    mesh->addVertices(std::move(vertices), std::move(indices));
-    mesh->compileVertexBuffer();
+    Tangram::MeshData<LineVertex> md;
+    md.indices = indices;
+    md.vertices = vertices;
+    mesh->compile(md);
+    //mesh->addVertices(std::move(vertices), std::move(indices));
+    //mesh->compileVertexBuffer();
 
     return mesh;
 }
 
 inline std::shared_ptr<HudMesh> getCircularRulerMesh(float radius, int nLines, float width){
     
-    std::shared_ptr<VertexLayout> vertexLayout = std::shared_ptr<VertexLayout>(new VertexLayout({
+    std::shared_ptr<Tangram::VertexLayout> vertexLayout = std::shared_ptr<Tangram::VertexLayout>(new Tangram::VertexLayout({
         {"a_position", 2, GL_FLOAT, false, 0}
     }));
     std::vector<LineVertex> vertices;
-    std::vector<int> indices;
+    std::vector<short unsigned int> indices;
 
     float step = TWO_PI/(float)nLines;
     float a = -PI;
@@ -79,19 +87,23 @@ inline std::shared_ptr<HudMesh> getCircularRulerMesh(float radius, int nLines, f
     }
 
     std::shared_ptr<HudMesh> mesh(new HudMesh(vertexLayout, GL_LINES));
-    mesh->addVertices(std::move(vertices), std::move(indices));
-    mesh->compileVertexBuffer();
+    Tangram::MeshData<LineVertex> md;
+    md.indices = indices;
+    md.vertices = vertices;
+    mesh->compile(md);
+    //mesh->addVertices(std::move(vertices), std::move(indices));
+    //mesh->compileVertexBuffer();
 
     return mesh;
 }
 
 inline std::shared_ptr<HudMesh> getTriangle(const glm::vec2& pos, float width, float angle = 0){
     
-    std::shared_ptr<VertexLayout> vertexLayout = std::shared_ptr<VertexLayout>(new VertexLayout({
+    std::shared_ptr<Tangram::VertexLayout> vertexLayout = std::shared_ptr<Tangram::VertexLayout>(new Tangram::VertexLayout({
         {"a_position", 2, GL_FLOAT, false, 0}
     }));
     std::vector<LineVertex> vertices;
-    std::vector<int> indices;
+    std::vector<short unsigned int> indices;
 
     float step = TWO_PI/3.0f;
     for(int i = 0; i < 3; i++){
@@ -102,8 +114,12 @@ inline std::shared_ptr<HudMesh> getTriangle(const glm::vec2& pos, float width, f
     }
 
     std::shared_ptr<HudMesh> mesh(new HudMesh(vertexLayout, GL_TRIANGLES));
-    mesh->addVertices(std::move(vertices), std::move(indices));
-    mesh->compileVertexBuffer();
+    Tangram::MeshData<LineVertex> md;
+    md.indices = indices;
+    md.vertices = vertices;
+    mesh->compile(md);
+    //mesh->addVertices(std::move(vertices), std::move(indices));
+    //mesh->compileVertexBuffer();
 
     return mesh;
 }
