@@ -2,6 +2,7 @@
 #include "map.h"
 #include "log.h"
 #include "rpiPlatform.h"
+#include "hud.h"
 
 #include <cassert>
 #include <cmath>
