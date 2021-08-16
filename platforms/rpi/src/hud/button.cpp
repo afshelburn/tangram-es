@@ -42,7 +42,7 @@ void Button::init(){
     });
 
     m_fixShader = std::shared_ptr<Tangram::ShaderProgram>(new Tangram::ShaderProgram());
-    m_fixShader->setSourceStrings(frag, fixVertShader);
+    m_fixShader->setShaderSource(fixVertShader, frag);
 
     {
         float cornersWidth = 10.;

@@ -62,8 +62,8 @@ void Hud::init() {
             gl_FragColor = vec4(1.0);
         });
 
-        m_trnShader = std::shared_ptr<ShaderProgram>(new ShaderProgram());
-        m_trnShader->setSourceStrings(frag, trnVertShader);
+        m_trnShader = std::shared_ptr<Tangram::ShaderProgram>(new Tangram::ShaderProgram());
+        m_trnShader->setShaderSource(trnVertShader, frag);
 
         m_cursorMesh = getCrossMesh(10.0f);
     }

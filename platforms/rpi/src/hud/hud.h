@@ -1,6 +1,6 @@
 #pragma once
 
-#include "util/shaderProgram.h"
+#include "gl/shaderProgram.h"
 
 #include "shapes.h"
 #include "glm/glm.hpp"
@@ -32,7 +32,7 @@ public:
 
 private:
 
-    std::shared_ptr<ShaderProgram>  m_trnShader;
+    std::shared_ptr<Tangram::ShaderProgram>  m_trnShader;
     std::shared_ptr<HudMesh>       m_cursorMesh;  
 
     int     m_selected; 

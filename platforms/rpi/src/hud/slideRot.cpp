@@ -66,11 +66,11 @@ void SlideRot::init(){
         gl_FragColor = vec4(vec3(1.0),v_alpha)*(mask.x*mask.y);
     });
 
-    m_fixShader = std::shared_ptr<ShaderProgram>(new ShaderProgram());
-    m_fixShader->setSourceStrings(frag, fixVertShader);
+    m_fixShader = std::shared_ptr<Tangram::ShaderProgram>(new Tangram::ShaderProgram());
+    m_fixShader->setShaderSource(fixVertShader, frag);
 
-    m_rotShader = std::shared_ptr<ShaderProgram>(new ShaderProgram());
-    m_rotShader->setSourceStrings(frag, rotVertShader);
+    m_rotShader = std::shared_ptr<Tangram::ShaderProgram>(new Tangram::ShaderProgram());
+    m_rotShader->setShaderSource(rotVertShader, frag);
 
     m_circularRulerMeshA = getCircularRulerMesh(((float)getWindowHeight())*0.42125,180,getWindowWidth()*0.0151125);
     m_circularRulerMeshB = getCircularRulerMesh(((float)getWindowHeight())*0.42125,36,getWindowWidth()*0.0204525);

@@ -5,7 +5,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-#include "util/vertexLayout.h"
+#include "gl/vertexLayout.h"
 #include "util/geom.h"
 
 void SlideZoom::init(){
@@ -63,11 +63,11 @@ void SlideZoom::init(){
         gl_FragColor = vec4(vec3(1.0),v_alpha)*(mask.x*mask.y);
     });
 
-    m_fixShader = std::shared_ptr<ShaderProgram>(new ShaderProgram());
-    m_fixShader->setSourceStrings(frag, fixVertShader);
+    m_fixShader = std::shared_ptr<Tangram::ShaderProgram>(new Tangram::ShaderProgram());
+    m_fixShader->setShaderSource(fixVertShader, frag);
 
-    m_trnShader = std::shared_ptr<ShaderProgram>(new ShaderProgram());
-    m_trnShader->setSourceStrings(frag, trnVertShader);
+    m_trnShader = std::shared_ptr<Tangram::ShaderProgram>(new Tangram::ShaderProgram());
+    m_trnShader->setShaderSource(trnVertShader, frag);
 
     m_verticalRulerMeshA = getVerticalRulerMesh(-getWindowHeight(),getWindowHeight(),5.0f,getWindowWidth()*0.0131125);
     m_verticalRulerMeshB = getVerticalRulerMesh(-getWindowHeight(),getWindowHeight(),50.0f,getWindowWidth()*0.0194525);
@@ -76,7 +76,7 @@ void SlideZoom::init(){
 
     // Make fixed lines
     {
-        std::shared_ptr<VertexLayout> vertexLayout = std::shared_ptr<VertexLayout>(new VertexLayout({
+        std::shared_ptr<Tangram::VertexLayout> vertexLayout = std::shared_ptr<Tangram::VertexLayout>(new Tangram::VertexLayout({
             {"a_position", 2, GL_FLOAT, false, 0}
         }));
         std::vector<LineVertex> vertices;
@@ -97,8 +97,12 @@ void SlideZoom::init(){
         indices.push_back(1); indices.push_back(5);
 
         std::shared_ptr<HudMesh> mesh(new HudMesh(vertexLayout, GL_LINES));
-        mesh->addVertices(std::move(vertices), std::move(indices));
-        mesh->compileVertexBuffer();
+        //mesh->addVertices(std::move(vertices), std::move(indices));
+        //mesh->compileVertexBuffer();
+        Tangram::MeshData<LineVertex> md;
+        md.indices = indices;
+        md.vertices = vertices;
+        mesh->compile(md);
 
         m_fixed = mesh;
     }
