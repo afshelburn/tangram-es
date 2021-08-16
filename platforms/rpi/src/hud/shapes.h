@@ -75,8 +75,8 @@ inline std::shared_ptr<HudMesh> getCircularRulerMesh(float radius, int nLines, f
     std::vector<LineVertex> vertices;
     std::vector<short unsigned int> indices;
 
-    float step = TWO_PI/(float)nLines;
-    float a = -PI;
+    float step = Tangram::TWO_PI/(float)nLines;
+    float a = -Tangram::PI;
     for(int i = 0; i < nLines; i++){
         vertices.push_back({radius*(float)cos(a), 
                             radius*(float)sin(a)});
@@ -105,7 +105,7 @@ inline std::shared_ptr<HudMesh> getTriangle(const glm::vec2& pos, float width, f
     std::vector<LineVertex> vertices;
     std::vector<short unsigned int> indices;
 
-    float step = TWO_PI/3.0f;
+    float step = Tangram::TWO_PI/3.0f;
     for(int i = 0; i < 3; i++){
         vertices.push_back({pos.x+width*(float)cos(angle), 
                             pos.y+width*(float)sin(angle)});
