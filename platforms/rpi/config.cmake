@@ -28,6 +28,8 @@ target_include_directories(tangram
   platforms/common
   platforms/rpi/src
   platforms/rpi/src/hud
+  core/deps/isect2d/include
+  core/deps/glm
   ${FONTCONFIG_INCLUDE_DIRS}
   /opt/vc/include/
   /opt/vc/include/interface/vcos/pthreads
