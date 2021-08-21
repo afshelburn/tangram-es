@@ -130,18 +130,18 @@ void Hud::draw(std::unique_ptr<Tangram::Map>& pMap){
 
     // Cursor
     if (m_bCursor){
-        m_trnShader->use();
-        m_trnShader->setUniformf("u_offset", getMouseX(), getMouseY());
-        m_trnShader->setUniformMatrix4f("u_modelViewProjectionMatrix", glm::value_ptr(getOrthoMatrix()));
-        m_cursorMesh->draw(m_trnShader);
+ //       m_trnShader->use();
+ //       m_trnShader->setUniformf("u_offset", getMouseX(), getMouseY());
+ //      m_trnShader->setUniformMatrix4f("u_modelViewProjectionMatrix", glm::value_ptr(getOrthoMatrix()));
+ //       m_cursorMesh->draw(m_trnShader);
     }
     
     // Zoom
-    m_zoom.zoom = Tangram::getViewZoom();
+    m_zoom.zoom = pMap->getZoom();
     m_zoom.draw();
     
     // Rotation
-    m_rot.angle = Tangram::getViewRotation();
+    m_rot.angle = pMap->getRotation();
     m_rot.draw();
 
     // Center button
