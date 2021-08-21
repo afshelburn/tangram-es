@@ -108,7 +108,7 @@ void Hud::cursorDrag(float _x, float _y, int _button, std::unique_ptr<Tangram::M
 
     } else if (m_selected == 2) {
         
-        pMap->handlePinchGesture(getWindowWidth()/2.0, getWindowHeight()/2.0, 1.0 + getMouseVelY()*0.01);
+        pMap->handlePinchGesture(getWindowWidth()/2.0, getWindowHeight()/2.0, 1.0 + getMouseVelY()*0.01, 0.0f);
         m_zoom.slider += getMouseVelY();
 
     }
