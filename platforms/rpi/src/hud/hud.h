@@ -20,7 +20,7 @@ public:
     void setDrawCursor(bool _true);
 
     void init();
-    void draw();
+    void draw(std::unique_ptr<Tangram::Map>& pMap);
 
     void cursorClick(float _x, float _y, int _button, std::unique_ptr<Tangram::Map>& pMap);
     void cursorDrag(float _x, float _y, int _button, std::unique_ptr<Tangram::Map>& pMap);

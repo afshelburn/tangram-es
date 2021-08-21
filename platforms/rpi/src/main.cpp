@@ -177,7 +177,7 @@ int main(int argc, char **argv) {
             setRenderRequest(false);
             map->update(dt);
             map->render();
-            hud.draw();
+            hud.draw(map);
             swapSurface();
         }
     }

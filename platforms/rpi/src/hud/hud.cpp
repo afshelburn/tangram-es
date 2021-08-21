@@ -122,7 +122,7 @@ bool Hud::isInUse(){
     return m_selected != 0;
 }
 
-void Hud::draw(){
+void Hud::draw(std::unique_ptr<Tangram::Map>& pMap){
     
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
