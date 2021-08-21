@@ -1,5 +1,5 @@
 #include "hud.h"
-
+#include "map.h"
 #include <iostream>
 #include "context.h"
 
@@ -12,6 +12,8 @@
 #include "tangram.h"
 
 #include "../gps.h"
+
+#include "wrap.h"
 
 #define STRINGIFY(A) #A
 
@@ -69,7 +71,7 @@ void Hud::init() {
     }
 }
 
-void Hud::cursorClick(float _x, float _y, int _button){
+void Hud::cursorClick(float _x, float _y, int _button, Map* pMap){
 
     if (m_center.inside(_x,_y)){
         float lat = 0.0;
@@ -88,7 +90,7 @@ void Hud::cursorClick(float _x, float _y, int _button){
     }
 }
 
-void Hud::cursorDrag(float _x, float _y, int _button){
+void Hud::cursorDrag(float _x, float _y, int _button, Map* pMap){
     if (m_selected == 1) {
 
         float scale = -1.0;
@@ -100,18 +102,18 @@ void Hud::cursorDrag(float _x, float _y, int _button){
         double rot1 = atan2(mouse.y, mouse.x);
         double rot2 = atan2(prevMouse.y, prevMouse.x);
         double rot = rot1-rot2;
-        wrapRad(rot);
-        Tangram::handleRotateGesture(getWindowWidth()/2.0, getWindowHeight()/2.0, rot*scale);
+        rot = WrapTwoPI(rot);
+        pMap->handleRotateGesture(getWindowWidth()/2.0, getWindowHeight()/2.0, rot*scale);
 
     } else if (m_selected == 2) {
         
-        Tangram::handlePinchGesture(getWindowWidth()/2.0, getWindowHeight()/2.0, 1.0 + getMouseVelY()*0.01);
+        pMap->handlePinchGesture(getWindowWidth()/2.0, getWindowHeight()/2.0, 1.0 + getMouseVelY()*0.01);
         m_zoom.slider += getMouseVelY();
 
     }
 }
 
-void Hud::cursorRelease(float _x, float _y){
+void Hud::cursorRelease(float _x, float _y, Map* pMap){
     m_selected = 0;
 }
 

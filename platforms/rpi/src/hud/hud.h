@@ -9,6 +9,8 @@
 #include "slideRot.h"
 #include "button.h"
 
+class Map;
+
 class Hud {
 public:
 
@@ -20,9 +22,9 @@ public:
     void init();
     void draw();
 
-    void cursorClick(float _x, float _y, int _button);
-    void cursorDrag(float _x, float _y, int _button);
-    void cursorRelease(float _x, float _y);
+    void cursorClick(float _x, float _y, int _button, Map* pMap);
+    void cursorDrag(float _x, float _y, int _button, Map* pMap);
+    void cursorRelease(float _x, float _y, Map* pMap);
 
     bool isInUse();
 

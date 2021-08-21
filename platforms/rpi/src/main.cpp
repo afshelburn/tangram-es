@@ -232,7 +232,7 @@ void onMouseClick(float _x, float _y, int _button) {
 void onMouseDrag(float _x, float _y, int _button) {
     if( _button == 1 ){
 		if (hud.isInUse()){
-            hud.cursorDrag(_x,_y,_button);
+            hud.cursorDrag(_x,_y,_button, map);
         } else {
         	map->handlePanGesture(_x - getMouseVelX(), _y + getMouseVelY(), _x, _y);
 		}
@@ -255,7 +255,7 @@ void onMouseDrag(float _x, float _y, int _button) {
 }
 
 void onMouseRelease(float _x, float _y) {
-	hud.cursorRelease(_x,_y);
+	hud.cursorRelease(_x,_y, map);
     setRenderRequest(true);
 }
 
