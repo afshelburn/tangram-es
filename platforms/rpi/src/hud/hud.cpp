@@ -71,7 +71,7 @@ void Hud::init() {
     }
 }
 
-void Hud::cursorClick(float _x, float _y, int _button, Map* pMap){
+void Hud::cursorClick(float _x, float _y, int _button, Tangram::Map* pMap){
 
     if (m_center.inside(_x,_y)){
         float lat = 0.0;
@@ -79,7 +79,8 @@ void Hud::cursorClick(float _x, float _y, int _button, Map* pMap){
         if (getLocation(&lat,&lon)){
             // GO TO CENTER
             std::cout << "GO TO " << lat << " lat, " << lon << " lon"<< std::endl;
-            Tangram::setViewPosition(lon,lat);
+            pMap->setPosition(lon, lat);
+            //Tangram::setViewPosition(lon,lat);
         } else {
             std::cout << "NO FIX GPS" << std::endl;  
         }
@@ -90,7 +91,7 @@ void Hud::cursorClick(float _x, float _y, int _button, Map* pMap){
     }
 }
 
-void Hud::cursorDrag(float _x, float _y, int _button, Map* pMap){
+void Hud::cursorDrag(float _x, float _y, int _button, Tangram::Map* pMap){
     if (m_selected == 1) {
 
         float scale = -1.0;
@@ -113,7 +114,7 @@ void Hud::cursorDrag(float _x, float _y, int _button, Map* pMap){
     }
 }
 
-void Hud::cursorRelease(float _x, float _y, Map* pMap){
+void Hud::cursorRelease(float _x, float _y, Tangram::Map* pMap){
     m_selected = 0;
 }
 
