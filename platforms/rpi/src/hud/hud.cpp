@@ -71,7 +71,7 @@ void Hud::init() {
     }
 }
 
-void Hud::cursorClick(float _x, float _y, int _button, Tangram::Map* pMap){
+void Hud::cursorClick(float _x, float _y, int _button, std::unique_ptr<Tangram::Map>& pMap){
 
     if (m_center.inside(_x,_y)){
         float lat = 0.0;
@@ -91,7 +91,7 @@ void Hud::cursorClick(float _x, float _y, int _button, Tangram::Map* pMap){
     }
 }
 
-void Hud::cursorDrag(float _x, float _y, int _button, Tangram::Map* pMap){
+void Hud::cursorDrag(float _x, float _y, int _button, std::unique_ptr<Tangram::Map>& pMap){
     if (m_selected == 1) {
 
         float scale = -1.0;
@@ -114,7 +114,7 @@ void Hud::cursorDrag(float _x, float _y, int _button, Tangram::Map* pMap){
     }
 }
 
-void Hud::cursorRelease(float _x, float _y, Tangram::Map* pMap){
+void Hud::cursorRelease(float _x, float _y, std::unique_ptr<Tangram::Map>& pMap){
     m_selected = 0;
 }
 

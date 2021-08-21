@@ -22,9 +22,9 @@ public:
     void init();
     void draw();
 
-    void cursorClick(float _x, float _y, int _button, Tangram::Map* pMap);
-    void cursorDrag(float _x, float _y, int _button, Tangram::Map* pMap);
-    void cursorRelease(float _x, float _y, Tangram::Map* pMap);
+    void cursorClick(float _x, float _y, int _button, std::unique_ptr<Tangram::Map>& pMap);
+    void cursorDrag(float _x, float _y, int _button, std::unique_ptr<Tangram::Map>& pMap);
+    void cursorRelease(float _x, float _y, std::unique_ptr<Tangram::Map>& pMap);
 
     bool isInUse();
 
