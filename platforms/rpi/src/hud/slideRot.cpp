@@ -9,8 +9,11 @@
 #include "util/geom.h"
 
 #include "gl/renderState.h"
+#include "view/view.h"
 
 #include "map.h"
+
+#include "wrap.h"
 
 void SlideRot::init(){
 
@@ -84,17 +87,22 @@ void SlideRot::init(){
 
 void SlideRot::draw(Tangram::RenderState& rs, std::unique_ptr<Tangram::Map>& pMap){
     m_rotShader->use(rs);
-    m_rotShader->setUniformf(rs, "u_angle", angle);
-    m_rotShader->setUniformf(rs, "u_mask", x, y, x+width, y+height);
-    m_rotShader->setUniformf(rs, "u_resolution", (float)getWindowWidth(), (float)getWindowHeight());
-    m_rotShader->setUniformMatrix4f(rs, "u_modelViewProjectionMatrix", glm::value_ptr(getOrthoMatrix()));
-    m_circularRulerMeshA->draw(rs, m_rotShader);
+    Tangram::UniformLocation u_angle("u_angle");
+    Tangram::UniformLocation u_mask("u_mask");
+    Tangram::UniformLocation u_resolution("u_resolution");
+    Tangram::UniformLocation u_modelViewProjectionMatrix("u_modelViewProjectionMatrix");
+
+    m_rotShader->setUniformf(rs, u_angle, angle);
+    m_rotShader->setUniformf(rs, u_mask, x, y, x+width, y+height);
+    m_rotShader->setUniformf(rs, u_resolution, (float)getWindowWidth(), (float)getWindowHeight());
+    m_rotShader->setUniformMatrix4f(rs, u_modelViewProjectionMatrix, pMap->getView().getOrthoViewportMatrix(), false);
+    m_circularRulerMeshA->draw(rs, *(m_rotShader.get()));
     glLineWidth(2.0f);
-    m_circularRulerMeshB->draw(rs, m_rotShader);
+    m_circularRulerMeshB->draw(rs, *(m_rotShader.get()));
     glLineWidth(1.0f);
 
     m_fixShader->use(rs);
     m_fixShader->setUniformf(rs, "u_mask", 0, 0, getWindowWidth(), getWindowHeight());
-    m_fixShader->setUniformMatrix4f(rs, "u_modelViewProjectionMatrix", glm::value_ptr(getOrthoMatrix()));
-    m_fixed->draw(rs, m_fixShader);
+    m_fixShader->setUniformMatrix4f(rs, "u_modelViewProjectionMatrix", pMap->getView().getOrthoViewportMatrix(), false);
+    m_fixed->draw(rs, *(m_fixShader.get()));
 }
