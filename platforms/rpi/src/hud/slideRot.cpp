@@ -82,7 +82,7 @@ void SlideRot::init(){
     m_circularRulerMeshA = getCircularRulerMesh(((float)getWindowHeight())*0.42125,180,getWindowWidth()*0.0151125);
     m_circularRulerMeshB = getCircularRulerMesh(((float)getWindowHeight())*0.42125,36,getWindowWidth()*0.0204525);
 
-    m_fixed = getTriangle(glm::vec2(getWindowWidth()*0.5,y+height*0.3),getWindowHeight()*0.01,PI/2.0);
+    m_fixed = getTriangle(glm::vec2(getWindowWidth()*0.5,y+height*0.3),getWindowHeight()*0.01,_PI/2.0);
 }
 
 void SlideRot::draw(Tangram::RenderState& rs, std::unique_ptr<Tangram::Map>& pMap){
