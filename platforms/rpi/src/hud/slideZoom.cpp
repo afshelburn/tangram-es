@@ -85,7 +85,7 @@ void SlideZoom::init(){
             {"a_position", 2, GL_FLOAT, false, 0}
         }));
         std::vector<LineVertex> vertices;
-        std::vector<int> indices;
+        std::vector<unsigned short int> indices;
 
         vertices.push_back({ x - 10.0, getWindowHeight()*0.5-20.0 });
         vertices.push_back({ x - 5.0, getWindowHeight()*0.5-20.0 });
@@ -140,7 +140,7 @@ void SlideZoom::draw(Tangram::RenderState& rs, std::unique_ptr<Tangram::Map>& pM
     m_trnShader->setUniformf(rs, u_offset, x-15., getWindowHeight()*0.5-(zoom-9)*2.1f) ;
     m_trnShader->setUniformf(rs, u_mask, 0, 0, getWindowWidth(), getWindowHeight());
     m_trnShader->setUniformMatrix4f(rs, u_modelViewProjectionMatrix, pMap->getView().getOrthoViewportMatrix(), false);
-    m_triangle->draw(rs, m_trnShader);
+    m_triangle->draw(rs, *(m_trnShader.get()));
 
     m_fixShader->use(rs);
     m_fixShader->setUniformf(rs, u_mask, 0, 0, getWindowWidth(), getWindowHeight());
