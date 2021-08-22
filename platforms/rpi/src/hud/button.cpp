@@ -8,6 +8,8 @@
 #include "gl/vertexLayout.h"
 #include "util/geom.h"
 
+#include "gl/renderState.h"
+
 void Button::init(){
 
     std::string frag =

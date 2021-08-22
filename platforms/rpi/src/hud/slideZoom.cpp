@@ -8,6 +8,8 @@
 #include "gl/vertexLayout.h"
 #include "util/geom.h"
 
+#include "gl/renderState.h"
+
 void SlideZoom::init(){
 
     zoom = 0;

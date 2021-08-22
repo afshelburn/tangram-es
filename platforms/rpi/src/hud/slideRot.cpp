@@ -8,6 +8,8 @@
 #include "util/vertexLayout.h"
 #include "util/geom.h"
 
+#include "gl/renderState.h"
+
 void SlideRot::init(){
 
     angle = 0;

@@ -14,6 +14,7 @@
 #include "../gps.h"
 
 #include "wrap.h"
+#include "gl/renderState.h"
 
 #define STRINGIFY(A) #A
 
