@@ -10,7 +10,7 @@ class SlideRot : public Rectangle {
 public:
 
     void init();
-    void draw();
+    void draw(Tangram::RenderState& rs);
 
     float angle;
 

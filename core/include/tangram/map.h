@@ -16,6 +16,7 @@ class Platform;
 class TileSource;
 class Scene;
 class SceneOptions;
+class RenderState;
 
 enum LabelType {
     icon,
@@ -437,6 +438,8 @@ public:
     void setDefaultBackgroundColor(float r, float g, float b);
 
     Platform& getPlatform();
+
+    RenderState& getRenderState();
 
 protected:
 

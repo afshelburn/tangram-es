@@ -10,7 +10,7 @@ class Button : public Rectangle {
 public:
 
     void init();
-    void draw();
+    void draw(Tangram::RenderState& rs);
 
 private:
     std::shared_ptr<Tangram::ShaderProgram>  m_fixShader;

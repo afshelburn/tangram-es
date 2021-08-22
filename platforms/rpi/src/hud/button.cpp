@@ -107,9 +107,9 @@ void Button::init(){
     } 
 }
 
-void Button::draw(){
-    m_fixShader->use();
-    m_fixShader->setUniformf("u_mask", 0, 0, getWindowWidth(), getWindowHeight());
-    m_fixShader->setUniformMatrix4f("u_modelViewProjectionMatrix", glm::value_ptr(getOrthoMatrix()));
-    m_fixMesh->draw(m_fixShader);
+void Button::draw(Tangram::RenderState& rs){
+    m_fixShader->use(rs);
+    m_fixShader->setUniformf(rs, "u_mask", 0, 0, getWindowWidth(), getWindowHeight());
+    m_fixShader->setUniformMatrix4f(rs, "u_modelViewProjectionMatrix", glm::value_ptr(getOrthoMatrix()));
+    m_fixMesh->draw(rs, m_fixShader);
 }

@@ -108,7 +108,7 @@ void SlideZoom::init(){
     }
 }
 
-void SlideZoom::draw(){
+void SlideZoom::draw(Tangram::RenderState& rs){
 
     if ( slider > height ) {
         slider -= height;
@@ -116,26 +116,26 @@ void SlideZoom::draw(){
         slider += height;
     }
 
-    m_trnShader->use();
-    m_trnShader->setUniformf("u_offset", x, slider);
-    m_trnShader->setUniformf("u_mask", x, y, x+width, y+height);
-    m_trnShader->setUniformf("u_resolution", getWindowWidth(),getWindowHeight());
-    m_trnShader->setUniformMatrix4f("u_modelViewProjectionMatrix", glm::value_ptr(getOrthoMatrix()));
-    m_verticalRulerMeshA->draw(m_trnShader);
+    m_trnShader->use(rs);
+    m_trnShader->setUniformf(rs, "u_offset", x, slider);
+    m_trnShader->setUniformf(rs, "u_mask", x, y, x+width, y+height);
+    m_trnShader->setUniformf(rs, "u_resolution", getWindowWidth(),getWindowHeight());
+    m_trnShader->setUniformMatrix4f(rs, "u_modelViewProjectionMatrix", glm::value_ptr(getOrthoMatrix()));
+    m_verticalRulerMeshA->draw(rs, m_trnShader);
     glLineWidth(2.0f);
-    m_verticalRulerMeshB->draw(m_trnShader);
+    m_verticalRulerMeshB->draw(rs, m_trnShader);
     glLineWidth(1.0f);
 
-    m_trnShader->use();
-    m_trnShader->setUniformf("u_offset", x-15., getWindowHeight()*0.5-(zoom-9)*2.1f) ;
-    m_trnShader->setUniformf("u_mask", 0, 0, getWindowWidth(), getWindowHeight());
-    m_trnShader->setUniformMatrix4f("u_modelViewProjectionMatrix", glm::value_ptr(getOrthoMatrix()));
-    m_triangle->draw(m_trnShader);
+    m_trnShader->use(rs);
+    m_trnShader->setUniformf(rs, "u_offset", x-15., getWindowHeight()*0.5-(zoom-9)*2.1f) ;
+    m_trnShader->setUniformf(rs, "u_mask", 0, 0, getWindowWidth(), getWindowHeight());
+    m_trnShader->setUniformMatrix4f(rs, "u_modelViewProjectionMatrix", glm::value_ptr(getOrthoMatrix()));
+    m_triangle->draw(rs, m_trnShader);
 
-    m_fixShader->use();
-    m_fixShader->setUniformf("u_mask", 0, 0, getWindowWidth(), getWindowHeight());
-    m_fixShader->setUniformMatrix4f("u_modelViewProjectionMatrix", glm::value_ptr(getOrthoMatrix()));
+    m_fixShader->use(rs);
+    m_fixShader->setUniformf(rs, "u_mask", 0, 0, getWindowWidth(), getWindowHeight());
+    m_fixShader->setUniformMatrix4f(rs, "u_modelViewProjectionMatrix", glm::value_ptr(getOrthoMatrix()));
     // glLineWidth(2.0f);
-    m_fixed->draw(m_fixShader);
+    m_fixed->draw(rs, m_fixShader);
     // glLineWidth(1.0f);
 }

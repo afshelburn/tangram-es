@@ -919,6 +919,10 @@ void Map::setDefaultBackgroundColor(float r, float g, float b) {
     impl->renderState.defaultOpaqueClearColor(r, g, b);
 }
 
+RenderState& Map::getRenderState() {
+	return impl->renderState;
+}
+
 void setDebugFlag(DebugFlags _flag, bool _on) {
 
     g_flags.set(_flag, _on);

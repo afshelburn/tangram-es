@@ -10,7 +10,7 @@ class SlideZoom : public Rectangle {
 public:
 
     void init();
-    void draw();
+    void draw(Tangram::RenderState& rs);
 
     float zoom;
     float slider;

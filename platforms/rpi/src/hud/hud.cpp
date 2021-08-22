@@ -124,9 +124,14 @@ bool Hud::isInUse(){
 
 void Hud::draw(std::unique_ptr<Tangram::Map>& pMap){
     
-    glDisable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	Tangram::RenderState& rs = pMap->getRenderState();
+	GLboolean depthTest = rs.depthTest(GL_FALSE);
+	GLboolean blending = rs.blending(GL_TRUE);
+	rs.blendingFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	//glDisable(GL_DEPTH_TEST);
+    //glEnable(GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Cursor
     if (m_bCursor){
@@ -138,15 +143,17 @@ void Hud::draw(std::unique_ptr<Tangram::Map>& pMap){
     
     // Zoom
     m_zoom.zoom = pMap->getZoom();
-    m_zoom.draw();
+    m_zoom.draw(rs);
     
     // Rotation
     m_rot.angle = pMap->getRotation();
-    m_rot.draw();
+    m_rot.draw(rs);
 
     // Center button
-    m_center.draw();
+    m_center.draw(rs);
 
-    glDisable(GL_BLEND);
-    glEnable(GL_DEPTH_TEST);
+    rs.depthTest(depthTest);
+    rs.blending(blending);
+    //glDisable(GL_BLEND);
+    //glEnable(GL_DEPTH_TEST);
 }

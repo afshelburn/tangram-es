@@ -78,19 +78,19 @@ void SlideRot::init(){
     m_fixed = getTriangle(glm::vec2(getWindowWidth()*0.5,y+height*0.3),getWindowHeight()*0.01,PI/2.0);
 }
 
-void SlideRot::draw(){
-    m_rotShader->use();
-    m_rotShader->setUniformf("u_angle", angle);
-    m_rotShader->setUniformf("u_mask", x, y, x+width, y+height);
-    m_rotShader->setUniformf("u_resolution", (float)getWindowWidth(), (float)getWindowHeight());
-    m_rotShader->setUniformMatrix4f("u_modelViewProjectionMatrix", glm::value_ptr(getOrthoMatrix()));
-    m_circularRulerMeshA->draw(m_rotShader);
+void SlideRot::draw(Tangram::RenderState& rs){
+    m_rotShader->use(rs);
+    m_rotShader->setUniformf(rs, "u_angle", angle);
+    m_rotShader->setUniformf(rs, "u_mask", x, y, x+width, y+height);
+    m_rotShader->setUniformf(rs, "u_resolution", (float)getWindowWidth(), (float)getWindowHeight());
+    m_rotShader->setUniformMatrix4f(rs, "u_modelViewProjectionMatrix", glm::value_ptr(getOrthoMatrix()));
+    m_circularRulerMeshA->draw(rs, m_rotShader);
     glLineWidth(2.0f);
-    m_circularRulerMeshB->draw(m_rotShader);
+    m_circularRulerMeshB->draw(rs, m_rotShader);
     glLineWidth(1.0f);
 
-    m_fixShader->use();
-    m_fixShader->setUniformf("u_mask", 0, 0, getWindowWidth(), getWindowHeight());
-    m_fixShader->setUniformMatrix4f("u_modelViewProjectionMatrix", glm::value_ptr(getOrthoMatrix()));
-    m_fixed->draw(m_fixShader);
+    m_fixShader->use(rs);
+    m_fixShader->setUniformf(rs, "u_mask", 0, 0, getWindowWidth(), getWindowHeight());
+    m_fixShader->setUniformMatrix4f(rs, "u_modelViewProjectionMatrix", glm::value_ptr(getOrthoMatrix()));
+    m_fixed->draw(rs, m_fixShader);
 }
