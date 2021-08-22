@@ -17,6 +17,7 @@ class TileSource;
 class Scene;
 class SceneOptions;
 class RenderState;
+class View;
 
 enum LabelType {
     icon,
@@ -440,6 +441,8 @@ public:
     Platform& getPlatform();
 
     RenderState& getRenderState();
+
+    View& getView();
 
 protected:
 

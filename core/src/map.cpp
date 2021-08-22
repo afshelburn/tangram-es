@@ -923,6 +923,10 @@ RenderState& Map::getRenderState() {
 	return impl->renderState;
 }
 
+View& Map::getView() {
+	return impl->view;
+}
+
 void setDebugFlag(DebugFlags _flag, bool _on) {
 
     g_flags.set(_flag, _on);

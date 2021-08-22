@@ -115,6 +115,6 @@ void Button::draw(Tangram::RenderState& rs, std::unique_ptr<Tangram::Map>& pMap)
     Tangram::UniformLocation u_modelViewProjectionMatrix("u_modelViewProjectionMatrix");
     m_fixShader->setUniformf(rs, u_mask, 0, 0, getWindowWidth(), getWindowHeight());
     //pMap->getView()->getOrthoMatrix();
-    m_fixShader->setUniformMatrix4f(rs, u_modelViewProjectionMatrix, glm::value_ptr(getOrthoMatrix()));
+    m_fixShader->setUniformMatrix4f(rs, u_modelViewProjectionMatrix, glm::value_ptr(pMap->getView().getOrthoViewportMatrix()));
     m_fixMesh->draw(rs, m_fixShader);
 }
