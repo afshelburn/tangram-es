@@ -6,7 +6,9 @@
 #include "glm/glm.hpp"
 #include "rectangle.h"
 
-class Tangram::Map;
+namespace Tangram {
+	class Map;
+}
 
 class SlideRot : public Rectangle {
 public:
