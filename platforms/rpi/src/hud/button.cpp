@@ -10,6 +10,8 @@
 
 #include "gl/renderState.h"
 
+#include "map.h"
+
 void Button::init(){
 
     std::string frag =
