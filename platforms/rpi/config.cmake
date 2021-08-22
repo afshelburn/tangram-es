@@ -18,6 +18,7 @@ add_executable(tangram
   platforms/rpi/src/hud/button.cpp
   platforms/rpi/src/hud/slideRot.cpp
   platforms/rpi/src/hud/slideZoom.cpp
+  platforms/rpi/src/hud/rectangle.cpp
   platforms/common/urlClient.cpp
   platforms/common/linuxSystemFontHelper.cpp
   platforms/common/platform_gl.cpp
