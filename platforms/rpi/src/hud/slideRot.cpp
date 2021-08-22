@@ -102,7 +102,7 @@ void SlideRot::draw(Tangram::RenderState& rs, std::unique_ptr<Tangram::Map>& pMa
     glLineWidth(1.0f);
 
     m_fixShader->use(rs);
-    m_fixShader->setUniformf(rs, "u_mask", 0, 0, getWindowWidth(), getWindowHeight());
-    m_fixShader->setUniformMatrix4f(rs, "u_modelViewProjectionMatrix", pMap->getView().getOrthoViewportMatrix(), false);
+    m_fixShader->setUniformf(rs, u_mask, 0, 0, getWindowWidth(), getWindowHeight());
+    m_fixShader->setUniformMatrix4f(rs, u_modelViewProjectionMatrix, pMap->getView().getOrthoViewportMatrix(), false);
     m_fixed->draw(rs, *(m_fixShader.get()));
 }
