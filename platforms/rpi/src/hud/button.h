@@ -6,11 +6,13 @@
 #include "glm/glm.hpp"
 #include "rectangle.h"
 
+class Tangram::Map;
+
 class Button : public Rectangle {
 public:
 
     void init();
-    void draw(Tangram::RenderState& rs);
+    void draw(Tangram::RenderState& rs, std::unique_ptr<Tangram::Map>& pMap);
 
 private:
     std::shared_ptr<Tangram::ShaderProgram>  m_fixShader;

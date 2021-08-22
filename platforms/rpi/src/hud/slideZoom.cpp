@@ -110,7 +110,7 @@ void SlideZoom::init(){
     }
 }
 
-void SlideZoom::draw(Tangram::RenderState& rs){
+void SlideZoom::draw(Tangram::RenderState& rs, std::unique_ptr<Tangram::Map>& pMap){
 
     if ( slider > height ) {
         slider -= height;

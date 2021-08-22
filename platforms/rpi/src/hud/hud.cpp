@@ -144,14 +144,14 @@ void Hud::draw(std::unique_ptr<Tangram::Map>& pMap){
     
     // Zoom
     m_zoom.zoom = pMap->getZoom();
-    m_zoom.draw(rs);
+    m_zoom.draw(rs, pMap);
     
     // Rotation
     m_rot.angle = pMap->getRotation();
-    m_rot.draw(rs);
+    m_rot.draw(rs, pMap);
 
     // Center button
-    m_center.draw(rs);
+    m_center.draw(rs, pMap);
 
     rs.depthTest(depthTest);
     rs.blending(blending);

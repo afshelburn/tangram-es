@@ -80,7 +80,7 @@ void SlideRot::init(){
     m_fixed = getTriangle(glm::vec2(getWindowWidth()*0.5,y+height*0.3),getWindowHeight()*0.01,PI/2.0);
 }
 
-void SlideRot::draw(Tangram::RenderState& rs){
+void SlideRot::draw(Tangram::RenderState& rs, std::unique_ptr<Tangram::Map>& pMap){
     m_rotShader->use(rs);
     m_rotShader->setUniformf(rs, "u_angle", angle);
     m_rotShader->setUniformf(rs, "u_mask", x, y, x+width, y+height);
