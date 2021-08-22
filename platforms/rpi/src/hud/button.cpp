@@ -11,6 +11,7 @@
 #include "gl/renderState.h"
 
 #include "map.h"
+#include "view/view.h"
 
 void Button::init(){
 
