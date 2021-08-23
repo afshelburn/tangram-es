@@ -1,6 +1,6 @@
 #include "rectangle.h"
-
-#include "utils.h"
+#include "util/geom.h"
+//#include "utils.h"
 
 Rectangle::Rectangle():x(0.0), y(0.0), width(0.0), height(0.0){
 
