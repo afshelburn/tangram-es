@@ -1,5 +1,6 @@
 #include "rectangle.h"
 #include "util/geom.h"
+#include <algorithm>
 //#include "utils.h"
 
 Rectangle::Rectangle():x(0.0), y(0.0), width(0.0), height(0.0){
@@ -57,22 +58,22 @@ glm::vec3 Rectangle::getMax() const {
 
 //----------------------------------------------------------
 float Rectangle::getMinX() const {
-    return MIN(x, x + width);  // - width
+    return std::min(x, x + width);  // - width
 }
 
 //----------------------------------------------------------
 float Rectangle::getMaxX() const {
-    return MAX(x, x + width);  // - width
+    return std::max(x, x + width);  // - width
 }
 
 //----------------------------------------------------------
 float Rectangle::getMinY() const{
-    return MIN(y, y + height);  // - height
+    return std::min(y, y + height);  // - height
 }
 
 //----------------------------------------------------------
 float Rectangle::getMaxY() const {
-    return MAX(y, y + height);  // - height
+    return std::max(y, y + height);  // - height
 }
 
 bool Rectangle::inside(const float &_px, const float &_py) const {
@@ -147,10 +148,10 @@ bool Rectangle::intersects(const Rectangle& rect) const {
 }
 
 void Rectangle::growToInclude(const glm::vec3& p){
-    float x0 = MIN(getMinX(),p.x);
-    float x1 = MAX(getMaxX(),p.x);
-    float y0 = MIN(getMinY(),p.y);
-    float y1 = MAX(getMaxY(),p.y);
+    float x0 = std::min(getMinX(),p.x);
+    float x1 = std::max(getMaxX(),p.x);
+    float y0 = std::min(getMinY(),p.y);
+    float y1 = std::max(getMaxY(),p.y);
     float w = x1 - x0;
     float h = y1 - y0;
     set(x0,y0,w,h);
