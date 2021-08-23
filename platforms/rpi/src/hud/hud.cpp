@@ -11,6 +11,8 @@
 
 #include "tangram.h"
 
+#include "view/view.h"
+
 #include "../gps.h"
 
 #include "wrap.h"
