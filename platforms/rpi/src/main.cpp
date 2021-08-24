@@ -152,9 +152,8 @@ int main(int argc, char **argv) {
     LOG("Base URL: %s", baseUrl.string().c_str());
 
     Url sceneUrl = baseUrl.resolve(Url(options.sceneFilePath));
+    hud.setDrawCursor(options.drawCursor);
 
-	hud.setDrawCursor(options.drawCursor);
-	
     map = std::make_unique<Map>(std::make_unique<RpiPlatform>(urlClientOptions));
     map->loadScene(sceneUrl.string(), !options.hasLocationSet, updates);
     map->setupGL();
@@ -167,6 +166,9 @@ int main(int argc, char **argv) {
         map->setZoom(options.zoom);
     }
 
+    hud.init();
+    hud.setDrawCursor(true);
+    
     // Start clock
     Timer timer;
 

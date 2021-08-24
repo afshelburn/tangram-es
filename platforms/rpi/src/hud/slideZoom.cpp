@@ -107,6 +107,8 @@ void SlideZoom::init(){
         Tangram::MeshData<LineVertex> md;
         md.indices = indices;
         md.vertices = vertices;
+        md.offsets.emplace_back(indices.size(), vertices.size());
+        
         mesh->compile(md);
 
         m_fixed = mesh;
@@ -122,29 +124,35 @@ void SlideZoom::draw(Tangram::RenderState& rs, std::unique_ptr<Tangram::Map>& pM
     }
 
     m_trnShader->use(rs);
-    Tangram::UniformLocation u_offset("u_offset");
-    Tangram::UniformLocation u_mask("u_mask");
-    Tangram::UniformLocation u_resolution("u_resolution");
-    Tangram::UniformLocation u_modelViewProjectionMatrix("u_modelViewProjectionMatrix");
+    Tangram::UniformLocation trn_u_offset("u_offset");
+    Tangram::UniformLocation trn_u_mask("u_mask");
+    Tangram::UniformLocation trn_u_resolution("u_resolution");
+    Tangram::UniformLocation trn_u_modelViewProjectionMatrix("u_modelViewProjectionMatrix");
+    
+    Tangram::UniformLocation fix_u_mask("u_mask");
+    Tangram::UniformLocation fix_u_modelViewProjectionMatrix("u_modelViewProjectionMatrix");
 
-    m_trnShader->setUniformf(rs, u_offset, x, slider);
-    m_trnShader->setUniformf(rs, u_mask, x, y, x+width, y+height);
-    m_trnShader->setUniformf(rs, u_resolution, getWindowWidth(),getWindowHeight());
-    m_trnShader->setUniformMatrix4f(rs, u_modelViewProjectionMatrix, pMap->getView().getOrthoViewportMatrix(), false);
+    m_trnShader->setUniformf(rs, trn_u_offset, x, slider);
+    m_trnShader->setUniformf(rs, trn_u_mask, x, y, x+width, y+height);
+    m_trnShader->setUniformf(rs, trn_u_resolution, getWindowWidth(),getWindowHeight());
+    m_trnShader->setUniformMatrix4f(rs, trn_u_modelViewProjectionMatrix, pMap->getView().getOrthoViewportMatrix());
     m_verticalRulerMeshA->draw(rs, *(m_trnShader.get()));
     glLineWidth(2.0f);
     m_verticalRulerMeshB->draw(rs, *(m_trnShader.get()));
     glLineWidth(1.0f);
 
     m_trnShader->use(rs);
-    m_trnShader->setUniformf(rs, u_offset, x-15., getWindowHeight()*0.5-(zoom-9)*2.1f) ;
-    m_trnShader->setUniformf(rs, u_mask, 0, 0, getWindowWidth(), getWindowHeight());
-    m_trnShader->setUniformMatrix4f(rs, u_modelViewProjectionMatrix, pMap->getView().getOrthoViewportMatrix(), false);
+        
+    m_trnShader->setUniformf(rs, trn_u_offset, x-15., getWindowHeight()*0.5-(zoom-9)*2.1f) ;
+    m_trnShader->setUniformf(rs, trn_u_mask, 0, 0, getWindowWidth(), getWindowHeight());
+    m_trnShader->setUniformMatrix4f(rs, trn_u_modelViewProjectionMatrix, pMap->getView().getOrthoViewportMatrix());
+    
     m_triangle->draw(rs, *(m_trnShader.get()));
 
     m_fixShader->use(rs);
-    m_fixShader->setUniformf(rs, u_mask, 0, 0, getWindowWidth(), getWindowHeight());
-    m_fixShader->setUniformMatrix4f(rs, u_modelViewProjectionMatrix, pMap->getView().getOrthoViewportMatrix(), false);
+        
+    m_fixShader->setUniformf(rs, fix_u_mask, 0, 0, getWindowWidth(), getWindowHeight());
+    m_fixShader->setUniformMatrix4f(rs, fix_u_modelViewProjectionMatrix, pMap->getView().getOrthoViewportMatrix());
     // glLineWidth(2.0f);
     m_fixed->draw(rs, *(m_fixShader.get()));
     // glLineWidth(1.0f);

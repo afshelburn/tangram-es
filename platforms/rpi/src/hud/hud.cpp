@@ -31,7 +31,7 @@ void Hud::setDrawCursor(bool _true){
 }
 
 void Hud::init() {
-
+    std::cout << "Window width = " << getWindowWidth() << ", Window height = " << getWindowHeight() << std::endl;
     m_zoom.set(getWindowWidth()*0.9575,getWindowHeight()*0.30625,getWindowWidth()*0.02625,getWindowHeight()*0.3875);
     m_zoom.init();
 
@@ -75,7 +75,7 @@ void Hud::init() {
 }
 
 void Hud::cursorClick(float _x, float _y, int _button, std::unique_ptr<Tangram::Map>& pMap){
-
+    std::cout << "CURSOR CLICK" << std::endl;
     if (m_center.inside(_x,_y)){
         float lat = 0.0;
         float lon = 0.0; 
@@ -95,6 +95,7 @@ void Hud::cursorClick(float _x, float _y, int _button, std::unique_ptr<Tangram::
 }
 
 void Hud::cursorDrag(float _x, float _y, int _button, std::unique_ptr<Tangram::Map>& pMap){
+    std::cout << "CURSOR DRAG" << std::endl;
     if (m_selected == 1) {
 
         float scale = -1.0;
@@ -132,21 +133,23 @@ void Hud::draw(std::unique_ptr<Tangram::Map>& pMap){
 	GLboolean blending = rs.blending(GL_TRUE);
 	rs.blendingFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	//glDisable(GL_DEPTH_TEST);
-    //glEnable(GL_BLEND);
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Cursor
-    if (m_bCursor){
-        Tangram::UniformLocation u_offset("u_offset");
-        Tangram::UniformLocation u_mask("u_mask");
-        Tangram::UniformLocation u_resolution("u_resolution");
-        Tangram::UniformLocation u_modelViewProjectionMatrix("u_modelViewProjectionMatrix");
-        m_trnShader->use(rs);
-        m_trnShader->setUniformf(rs, u_offset, getMouseX(), getMouseY());
-        m_trnShader->setUniformMatrix4f(rs, u_modelViewProjectionMatrix, pMap->getView().getOrthoViewportMatrix(), false);
-        m_cursorMesh->draw(rs, *(m_trnShader.get()));
-    }
+    //if (m_bCursor){
+        //Tangram::UniformLocation u_offset("u_offset");
+        //Tangram::UniformLocation u_modelViewProjectionMatrix("u_modelViewProjectionMatrix");
+        //std::cout << "use" << std::endl;
+        //m_trnShader->use(rs);
+        //std::cout << "u_offset" << std::endl;
+        //m_trnShader->setUniformf(rs, u_offset, getMouseX(), getMouseY());
+        //std::cout << "u_modelViewProjectionMatrix" << std::endl;
+        //m_trnShader->setUniformMatrix4f(rs, u_modelViewProjectionMatrix, pMap->getView().getOrthoViewportMatrix(), false);
+        //std::cout << "draw" << std::endl;
+        //m_cursorMesh->draw(rs, *(m_trnShader.get()));
+    //}
     
     // Zoom
     m_zoom.zoom = pMap->getZoom();
@@ -161,6 +164,6 @@ void Hud::draw(std::unique_ptr<Tangram::Map>& pMap){
 
     rs.depthTest(depthTest);
     rs.blending(blending);
-    //glDisable(GL_BLEND);
-    //glEnable(GL_DEPTH_TEST);
+    glDisable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
 }

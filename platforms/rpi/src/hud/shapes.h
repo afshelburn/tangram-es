@@ -30,6 +30,7 @@ inline std::shared_ptr<HudMesh> getCrossMesh(float width){
     Tangram::MeshData<LineVertex> md;//(indices, vertices);
     md.indices = indices;
     md.vertices = vertices;
+    md.offsets.emplace_back(indices.size(), vertices.size());
     mesh->compile(md);
     //mesh->addVertices(std::move(vertices), std::move(indices));
     //mesh->compileVertexBuffer();
@@ -60,6 +61,7 @@ inline std::shared_ptr<HudMesh> getVerticalRulerMesh(float min, float max, float
     Tangram::MeshData<LineVertex> md;
     md.indices = indices;
     md.vertices = vertices;
+    md.offsets.emplace_back(indices.size(), vertices.size());
     mesh->compile(md);
     //mesh->addVertices(std::move(vertices), std::move(indices));
     //mesh->compileVertexBuffer();
@@ -90,6 +92,7 @@ inline std::shared_ptr<HudMesh> getCircularRulerMesh(float radius, int nLines, f
     Tangram::MeshData<LineVertex> md;
     md.indices = indices;
     md.vertices = vertices;
+    md.offsets.emplace_back(indices.size(), vertices.size());
     mesh->compile(md);
     //mesh->addVertices(std::move(vertices), std::move(indices));
     //mesh->compileVertexBuffer();
@@ -118,6 +121,7 @@ inline std::shared_ptr<HudMesh> getTriangle(const glm::vec2& pos, float width, f
     md.indices = indices;
     md.vertices = vertices;
     mesh->compile(md);
+    md.offsets.emplace_back(indices.size(), vertices.size());
     //mesh->addVertices(std::move(vertices), std::move(indices));
     //mesh->compileVertexBuffer();
 

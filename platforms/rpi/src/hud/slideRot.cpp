@@ -92,17 +92,20 @@ void SlideRot::draw(Tangram::RenderState& rs, std::unique_ptr<Tangram::Map>& pMa
     Tangram::UniformLocation u_resolution("u_resolution");
     Tangram::UniformLocation u_modelViewProjectionMatrix("u_modelViewProjectionMatrix");
 
+    Tangram::UniformLocation fix_u_mask("u_mask");
+    Tangram::UniformLocation fix_u_modelViewProjectionMatrix("u_modelViewProjectionMatrix");
+    
     m_rotShader->setUniformf(rs, u_angle, angle);
     m_rotShader->setUniformf(rs, u_mask, x, y, x+width, y+height);
     m_rotShader->setUniformf(rs, u_resolution, (float)getWindowWidth(), (float)getWindowHeight());
-    m_rotShader->setUniformMatrix4f(rs, u_modelViewProjectionMatrix, pMap->getView().getOrthoViewportMatrix(), false);
+    m_rotShader->setUniformMatrix4f(rs, u_modelViewProjectionMatrix, pMap->getView().getOrthoViewportMatrix());
     m_circularRulerMeshA->draw(rs, *(m_rotShader.get()));
     glLineWidth(2.0f);
     m_circularRulerMeshB->draw(rs, *(m_rotShader.get()));
     glLineWidth(1.0f);
 
     m_fixShader->use(rs);
-    m_fixShader->setUniformf(rs, u_mask, 0, 0, getWindowWidth(), getWindowHeight());
-    m_fixShader->setUniformMatrix4f(rs, u_modelViewProjectionMatrix, pMap->getView().getOrthoViewportMatrix(), false);
+    m_fixShader->setUniformf(rs, fix_u_mask, 0, 0, getWindowWidth(), getWindowHeight());
+    m_fixShader->setUniformMatrix4f(rs, fix_u_modelViewProjectionMatrix, pMap->getView().getOrthoViewportMatrix());
     m_fixed->draw(rs, *(m_fixShader.get()));
 }

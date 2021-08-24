@@ -1,9 +1,10 @@
 #include "button.h"
 
 #include "context.h"
-
+#include <iostream>
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "glm/gtx/string_cast.hpp"
 
 #include "gl/vertexLayout.h"
 #include "util/geom.h"
@@ -104,6 +105,7 @@ void Button::init(){
         Tangram::MeshData<LineVertex> md;
         md.indices = indices;
         md.vertices = vertices;
+        md.offsets.emplace_back(indices.size(), vertices.size());
         mesh->compile(md);
         //mesh->addVertices(std::move(vertices), std::move(indices));
         //mesh->compileVertexBuffer();
@@ -118,6 +120,7 @@ void Button::draw(Tangram::RenderState& rs, std::unique_ptr<Tangram::Map>& pMap)
     Tangram::UniformLocation u_modelViewProjectionMatrix("u_modelViewProjectionMatrix");
     m_fixShader->setUniformf(rs, u_mask, 0, 0, getWindowWidth(), getWindowHeight());
     //pMap->getView()->getOrthoMatrix();
-    m_fixShader->setUniformMatrix4f(rs, u_modelViewProjectionMatrix, pMap->getView().getOrthoViewportMatrix(), false);
+    //std::cout << "matrix = " << glm::to_string(pMap->getView().getOrthoViewportMatrix()) << std::endl;
+    m_fixShader->setUniformMatrix4f(rs, u_modelViewProjectionMatrix, pMap->getView().getOrthoViewportMatrix());
     m_fixMesh->draw(rs, *(m_fixShader.get()));
 }
