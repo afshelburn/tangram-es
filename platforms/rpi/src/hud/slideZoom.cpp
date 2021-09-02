@@ -1,5 +1,6 @@
 #include "slideZoom.h"
 
+#include <iostream>
 #include "context.h"
 
 #include "glm/gtc/matrix_transform.hpp"
@@ -142,7 +143,9 @@ void SlideZoom::draw(Tangram::RenderState& rs, std::unique_ptr<Tangram::Map>& pM
     glLineWidth(1.0f);
 
     m_trnShader->use(rs);
-        
+    
+    std::cout << "Zoom = " << zoom << std::endl;
+                                                 //was 15.
     m_trnShader->setUniformf(rs, trn_u_offset, x-15., getWindowHeight()*0.5-(zoom-9)*2.1f) ;
     m_trnShader->setUniformf(rs, trn_u_mask, 0, 0, getWindowWidth(), getWindowHeight());
     m_trnShader->setUniformMatrix4f(rs, trn_u_modelViewProjectionMatrix, pMap->getView().getOrthoViewportMatrix());

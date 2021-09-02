@@ -26,7 +26,7 @@ struct Viewport {
 };
 Viewport viewport;
 
-#define MOUSE_ID "mouse0"
+#define MOUSE_ID "mouse1"
 static int mouse_fd = -1;
 struct Mouse {
     float x = 0.f;
@@ -114,8 +114,9 @@ bool updateMouse() {
         mouse.velY = 0;
 
         float x = 0.0f, y = 0.0f;
-        int button = 0;
-
+        int button = 1;
+        std::cout << "MOUSE EVENT! type = " << mousee.type << ", code = " << mousee.code << ", value = " << mousee.value << std::endl;
+        //std::cout << "mouse code = " << mousee.code << std::endl;
         switch (mousee.type) {
             // Update Mouse Event
             case EV_KEY:
@@ -123,23 +124,37 @@ bool updateMouse() {
                     case BTN_LEFT:
                         if (mousee.value == 1) {
                             button = 1;
+                            //std::cout << "Button 1" << std::endl;
                         }
                         break;
                     case BTN_RIGHT:
                         if (mousee.value == 1) {
                             button = 2;
+                            //std::cout << "Button 2" << std::endl;
                         }
                         break;
                     case BTN_MIDDLE:
                         if (mousee.value == 1) {
                             button = 3;
+                            //std::cout << "Button 3" << std::endl;
                         }
                         break;
+                    case BTN_TOUCH:
+                        if (mousee.value == 1) {
+                            button = 1;
+                            //std::cout << "Button 1" << std::endl;
+                        }else{
+                            button = 0;
+                            mouse.x = getWindowWidth()/2;
+                            mouse.y = getWindowHeight()/2;
+                        }
+                        break;                    
                     default:
                         button = 0;
                         break;
                 }
                 if (button != mouse.button) {
+                    //std::cout << "Setting button value to " << button << std::endl;
                     mouse.button = button;
                     if (mouse.button == 0) {
                         onMouseRelease(mouse.x, mouse.y);
@@ -186,16 +201,23 @@ bool updateMouse() {
                     case ABS_X:
                         x = ((float)mousee.value / 4095.0f) * viewport.width;
                         mouse.velX = x - mouse.x;
+                        if(mouse.velX < -5)mouse.velX = -10;
+                        if(mouse.velX > 5)mouse.velX = 10;
                         mouse.x = x;
                         break;
                     case ABS_Y:
                         y = (1.0 - ((float)mousee.value / 4095.0f)) * viewport.height;
                         mouse.velY = y - mouse.y;
+                        if(mouse.velY < -5)mouse.velY = -5;
+                        if(mouse.velY > 5)mouse.velY = 5;
                         mouse.y = y;
                         break;
                     default:
                         break;
                 }
+                //std::cout << "mouse abs code = " << mousee.code << ", value = " << mousee.value << std::endl;
+                //std::cout << "mouse pos = " << mouse.x << ", " << mouse.y << std::endl;
+                //mouse.button = 1;
                 if (mouse.button != 0) {
                     onMouseDrag(mouse.x, mouse.y, mouse.button);
                 } else {

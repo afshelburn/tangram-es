@@ -31,6 +31,7 @@ public:
     SlideRot    m_rot;
     SlideZoom   m_zoom;
     Button      m_center;
+    //Button      m_cursor;
 
 private:
 

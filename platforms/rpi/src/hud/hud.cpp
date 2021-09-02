@@ -20,7 +20,7 @@
 
 #define STRINGIFY(A) #A
 
-Hud::Hud(): m_selected(0), m_bCursor(false){
+Hud::Hud(): m_selected(0), m_bCursor(true){
 }
 
 Hud::~Hud(){
@@ -37,11 +37,14 @@ void Hud::init() {
 
     m_rot.set(getWindowWidth()*0.34625,getWindowHeight()*0.866667,getWindowWidth()*0.3125,getWindowHeight()*0.1);
     m_rot.init();
+    
+    //m_rot.set(getWindowWidth()*0.34625,getWindowHeight()*0.05,getWindowWidth()*0.3125,getWindowHeight()*0.1);
+    //m_rot.init();
 
     m_center.set(getWindowWidth()*0.93625,getWindowHeight()*0.8958,getWindowHeight()*0.0708,getWindowHeight()*0.0708);
     m_center.init();
 
-    if (m_bCursor){
+    //if (m_bCursor){
         std::string frag =
 "#ifdef GL_ES\n"
 "precision mediump float;\n"
@@ -71,7 +74,7 @@ void Hud::init() {
         m_trnShader->setShaderSource(trnVertShader, frag);
 
         m_cursorMesh = getCrossMesh(10.0f);
-    }
+    //}
 }
 
 void Hud::cursorClick(float _x, float _y, int _button, std::unique_ptr<Tangram::Map>& pMap){
@@ -138,18 +141,25 @@ void Hud::draw(std::unique_ptr<Tangram::Map>& pMap){
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Cursor
-    //if (m_bCursor){
-        //Tangram::UniformLocation u_offset("u_offset");
-        //Tangram::UniformLocation u_modelViewProjectionMatrix("u_modelViewProjectionMatrix");
-        //std::cout << "use" << std::endl;
-        //m_trnShader->use(rs);
-        //std::cout << "u_offset" << std::endl;
-        //m_trnShader->setUniformf(rs, u_offset, getMouseX(), getMouseY());
-        //std::cout << "u_modelViewProjectionMatrix" << std::endl;
-        //m_trnShader->setUniformMatrix4f(rs, u_modelViewProjectionMatrix, pMap->getView().getOrthoViewportMatrix(), false);
-        //std::cout << "draw" << std::endl;
-        //m_cursorMesh->draw(rs, *(m_trnShader.get()));
-    //}
+    if (m_bCursor){
+        
+        Tangram::UniformLocation trn_u_offset("u_offset");
+        Tangram::UniformLocation trn_u_mask("u_mask");
+        Tangram::UniformLocation trn_u_resolution("u_resolution");
+        Tangram::UniformLocation trn_u_modelViewProjectionMatrix("u_modelViewProjectionMatrix");
+        
+        std::cout << "use" << std::endl;
+        m_trnShader->use(rs);
+        
+        std::cout << "u_offset" << std::endl;
+        m_trnShader->setUniformf(rs, trn_u_offset, getMouseX(), getWindowHeight()-getMouseY());
+        
+        std::cout << "u_modelViewProjectionMatrix" << std::endl;
+        m_trnShader->setUniformMatrix4f(rs, trn_u_modelViewProjectionMatrix, pMap->getView().getOrthoViewportMatrix());
+        
+        std::cout << "draw" << std::endl;
+        m_cursorMesh->draw(rs, *(m_trnShader.get()));
+    }
     
     // Zoom
     m_zoom.zoom = pMap->getZoom();

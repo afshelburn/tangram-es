@@ -1,0 +1,2 @@
+gst-launch-1.0 -v tcpclientsrc host=greely port=9000 ! decodebin ! videoconvert ! fbdevsink
+gst-launch-1.0 -v tcpclientsrc host=greely port=9000 ! decodebin ! videoconvert ! fbdevsink

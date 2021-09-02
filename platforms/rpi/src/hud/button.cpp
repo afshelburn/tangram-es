@@ -62,6 +62,8 @@ void Button::init(){
 
         // Cross
         glm::vec3 center = getCenter();
+        std::cout << "Center = " << glm::to_string(center) << std::endl;
+        
         vertices.push_back({ center.x-crossWidth, center.y});
         vertices.push_back({ center.x+crossWidth, center.y});
         vertices.push_back({ center.x, center.y-crossWidth});
@@ -75,6 +77,11 @@ void Button::init(){
         glm::vec3 B = getTopRight();
         glm::vec3 C = getBottomRight();
         glm::vec3 D = getBottomLeft();
+        
+        std::cout << "Top Left = " << glm::to_string(A) << std::endl;
+        std::cout << "Top Right = " << glm::to_string(B) << std::endl;
+        std::cout << "Bottom Right = " << glm::to_string(C) << std::endl;
+        std::cout << "Bottom Left = " << glm::to_string(D) << std::endl;
 
         vertices.push_back({ A.x, A.y + cornersWidth});
         vertices.push_back({ A.x, A.y});

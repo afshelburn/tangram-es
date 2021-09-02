@@ -1,5 +1,5 @@
 #include "slideRot.h"
-
+#include <iostream>
 #include "context.h"
 
 #include "glm/gtc/matrix_transform.hpp"
@@ -57,7 +57,7 @@ void SlideRot::init(){
         v_position.xy += u_resolution.xy*0.5;
         v_position.z = 0.1;
         vec2 fromCenter = v_position.xy-u_resolution.xy*0.5;
-        v_alpha = 1.0-clamp( (abs(atan(fromCenter.y,fromCenter.x)-1.57079632679)/1.57079632679)*2.0,0.0,1.0);
+        v_alpha = 1.0;//-clamp( (abs(atan(fromCenter.y,fromCenter.x)-1.57079632679)/1.57079632679)*2.0,0.0,1.0);
         gl_Position = u_modelViewProjectionMatrix * v_position;
     });
 
@@ -82,7 +82,10 @@ void SlideRot::init(){
     m_circularRulerMeshA = getCircularRulerMesh(((float)getWindowHeight())*0.42125,180,getWindowWidth()*0.0151125);
     m_circularRulerMeshB = getCircularRulerMesh(((float)getWindowHeight())*0.42125,36,getWindowWidth()*0.0204525);
 
-    m_fixed = getTriangle(glm::vec2(getWindowWidth()*0.5,y+height*0.3),getWindowHeight()*0.01,_PI/2.0);
+    std::cout << "x,y = " << x << ", " << y << ", w,h = " << width << ", " << height << std::endl;
+    
+    m_fixed = getTriangle(glm::vec2(getWindowWidth()*0.5,50),getWindowHeight()*0.02,-_PI/2.0);
+    //m_fixed = getTriangle(glm::vec2(getWindowWidth()*0.5,y+height*0.3),getWindowHeight()*0.02,_PI/2.0);
 }
 
 void SlideRot::draw(Tangram::RenderState& rs, std::unique_ptr<Tangram::Map>& pMap){

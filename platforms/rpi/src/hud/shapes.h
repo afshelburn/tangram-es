@@ -116,12 +116,12 @@ inline std::shared_ptr<HudMesh> getTriangle(const glm::vec2& pos, float width, f
         angle += step;
     }
 
-    std::shared_ptr<HudMesh> mesh(new HudMesh(vertexLayout, GL_TRIANGLES));
+    std::shared_ptr<HudMesh> mesh(new HudMesh(vertexLayout, GL_LINE_LOOP));
     Tangram::MeshData<LineVertex> md;
     md.indices = indices;
     md.vertices = vertices;
-    mesh->compile(md);
     md.offsets.emplace_back(indices.size(), vertices.size());
+    mesh->compile(md);
     //mesh->addVertices(std::move(vertices), std::move(indices));
     //mesh->compileVertexBuffer();
 
