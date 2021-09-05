@@ -17,6 +17,8 @@
 #include <sys/shm.h>
 #include <termios.h>
 
+#include <pigpio.h>
+
 Hud hud;
 
 #define KEY_ESC      27     // esc
