@@ -45,6 +45,7 @@ target_link_libraries(tangram
   pthread
   rt
   atomic
+  pigpiod_if2
   /opt/vc/lib/libbcm_host.so
   /opt/vc/lib/libbrcmEGL.so
   /opt/vc/lib/libbrcmGLESv2.so
@@ -54,7 +55,7 @@ target_link_libraries(tangram
 
 target_compile_options(tangram
   PRIVATE
-  -std=c++14
+  -std=c++17
   -Wall
   -fpermissive
 )

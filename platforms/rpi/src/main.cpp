@@ -16,8 +16,7 @@
 #include <sys/time.h>
 #include <sys/shm.h>
 #include <termios.h>
-
-#include <pigpio.h>
+#include "ioboard_if2.h"
 
 Hud hud;
 
