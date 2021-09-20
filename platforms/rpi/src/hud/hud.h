@@ -8,6 +8,7 @@
 #include "slideZoom.h"
 #include "slideRot.h"
 #include "button.h"
+#include "hudText.h"
 
 #include "map.h"
 
@@ -32,6 +33,7 @@ public:
     SlideZoom   m_zoom;
     Button      m_center;
     //Button      m_cursor;
+    HudText     m_speed;
 
 private:
 

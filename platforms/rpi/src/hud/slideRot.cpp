@@ -85,6 +85,8 @@ void SlideRot::init(){
     std::cout << "x,y = " << x << ", " << y << ", w,h = " << width << ", " << height << std::endl;
     
     m_fixed = getTriangle(glm::vec2(getWindowWidth()*0.5,50),getWindowHeight()*0.02,-_PI/2.0);
+    
+    std::cout << "Rot program = " << m_rotShader->getGlProgram() << std::endl;
     //m_fixed = getTriangle(glm::vec2(getWindowWidth()*0.5,y+height*0.3),getWindowHeight()*0.02,_PI/2.0);
 }
 

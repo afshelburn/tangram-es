@@ -3,6 +3,8 @@
 #include "log.h"
 #include "rpiPlatform.h"
 #include "hud.h"
+#include "debug/textDisplay.h"
+#include "view/view.h"
 
 #include <cassert>
 #include <cmath>
@@ -11,12 +13,14 @@
 #include <cstring>
 #include <ctime>
 #include <iostream>
+#include <memory>
 
 #include <fcntl.h>
 #include <sys/time.h>
 #include <sys/shm.h>
 #include <termios.h>
 #include "ioboard_if2.h"
+#include "gps.h"
 
 Hud hud;
 
@@ -35,6 +39,8 @@ std::unique_ptr<Map> map;
 std::string apiKey;
 
 static bool bUpdate = true;
+
+IOBoard* pBoard;
 
 struct LaunchOptions {
     std::string sceneFilePath = "res/scene.yaml";
@@ -123,6 +129,16 @@ int main(int argc, char **argv) {
     }
 
     LaunchOptions options = getLaunchOptions(argc, argv);
+    
+    int pi = pigpio_start(0, 0);
+    pBoard = new IOBoard(pi, 30);
+    
+    std::shared_ptr<PrintEvent> pe = std::make_shared<PrintEvent>();
+    for(int i = 0; i < 16; i++) {
+		pBoard->subscribe(i, pe);
+	}
+    
+    std::thread board_thread = pBoard->spawn();
 
     UrlClient::Options urlClientOptions;
     urlClientOptions.maxActiveTasks = 10;
@@ -170,26 +186,50 @@ int main(int argc, char **argv) {
     hud.init();
     hud.setDrawCursor(true);
     
+    TextDisplay::Instance().init();
+    
     // Start clock
     Timer timer;
+
+    std::vector< std::string > info;
+    info.push_back("test");
 
     while (bUpdate) {
         pollInput();
         double dt = timer.deltaSeconds();
         if (getRenderRequest() || map->getPlatform().isContinuousRendering() ) {
             setRenderRequest(false);
+            float lat = 32, lon = -117;
+            
+            if(getLocation(&lat, &lon)) {
+            //    map->getView().setPosition(lat, lon);
+                std::cout << "lat = " << lat << ", lon = " << lon << std::endl;
+            }
+            map->setPosition(lon, lat);
+            
             map->update(dt);
             map->render();
             hud.draw(map);
+            TextDisplay::Instance().draw(map->getRenderState(), info);
             swapSurface();
         }
+        pBoard->processEvents();
     }
 
     if (map) {
         map = nullptr;
     }
 
+    TextDisplay::Instance().deinit();
+
     destroySurface();
+    pBoard->set(-1, -1);
+    board_thread.join();
+    
+    delete pBoard;
+    
+    pigpio_stop(pi);
+    
     return 0;
 }
 

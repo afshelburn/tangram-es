@@ -43,7 +43,12 @@ void Hud::init() {
 
     m_center.set(getWindowWidth()*0.93625,getWindowHeight()*0.8958,getWindowHeight()*0.0708,getWindowHeight()*0.0708);
     m_center.init();
-
+    
+    m_speed.set(0, 0, getWindowWidth(), getWindowHeight());
+    m_speed.init();
+    m_speed.setFont("beteckna/BetecknaGSCondensed-Bold.ttf", 72);
+    m_speed.setText("55");
+    
     //if (m_bCursor){
         std::string frag =
 "#ifdef GL_ES\n"
@@ -161,6 +166,8 @@ void Hud::draw(std::unique_ptr<Tangram::Map>& pMap){
         m_cursorMesh->draw(rs, *(m_trnShader.get()));
     }
     
+    m_speed.draw(rs);
+    
     // Zoom
     m_zoom.zoom = pMap->getZoom();
     m_zoom.draw(rs, pMap);
@@ -176,4 +183,6 @@ void Hud::draw(std::unique_ptr<Tangram::Map>& pMap){
     rs.blending(blending);
     glDisable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
+    
+    
 }

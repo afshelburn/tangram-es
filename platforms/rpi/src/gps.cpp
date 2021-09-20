@@ -151,7 +151,8 @@ bool getLocation(float *_lat, float *_lon){
     static float lon = 0.0;
 
     if (fd<0) {
-        fd = openPort("/dev/ttyAMA0");
+        //fd = openPort("/dev/ttyAMA0");
+        fd = openPort("/dev/ttyACM0");
     }
 
     if (fd>=0) {
