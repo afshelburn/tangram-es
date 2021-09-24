@@ -1,179 +1,118 @@
-
 #include "gps.h"
+#include <ctime>
 
-#include <stdio.h>      // standard input / output functions
-#include <iostream>
-#include <sstream>
-#include <stdlib.h>
-#include <string.h>     // string function definitions
-#include <unistd.h>     // UNIX standard function definitions
-#include <fcntl.h>      // File control definitions
-#include <errno.h>      // Error number definitions
-#include <termios.h>    // POSIX terminal control definitions
-#include <vector>       // std::vector
-#include <algorithm>    // std::search
- 
-int openPort(const std::string& _portAddress){
-    int port_fd = open(_portAddress.c_str(), O_RDONLY | O_NOCTTY);
- 
-    if (port_fd == -1) {
-        std::cout << "Error opening serial" << std::endl;
-        return -1;
-    }
- 
-    struct termios tty;
-    struct termios tty_old;
-    memset(&tty, 0, sizeof tty);
- 
-    /* Error Handling */
-    if ( tcgetattr ( port_fd, &tty ) != 0 ){
-        std::cout << "Error " << errno << " from tcgetattr: " << strerror(errno) << std::endl;
-        return -1;
-    }
- 
-    /* Save old tty parameters */
-    tty_old = tty;
- 
-    /* Set Baud Rate */
-    cfsetospeed (&tty, (speed_t)B9600);
-    cfsetispeed (&tty, (speed_t)B9600);
- 
-    /* Setting other Port Stuff */
-    tty.c_cflag     &=  ~PARENB;            // Make 8n1
-    tty.c_cflag     &=  ~CSTOPB;
-    tty.c_cflag     &=  ~CSIZE;
-    tty.c_cflag     |=  CS8;
- 
-    tty.c_cflag     &=  ~CSTOPB;            // 1 stop bit
-    tty.c_cflag     &=  ~CRTSCTS;           // no flow control
-    tty.c_cc[VMIN]   =  1;                  // read doesn't block
-    tty.c_cc[VTIME]  =  5;                  // 0.5 seconds read timeout
-    // tty.c_cflag     |=  CREAD | CLOCAL;     // turn on READ & ignore ctrl lines
-    tty.c_cflag     |=  CLOCAL; // Enable receiver
- 
-    /* Make raw */
-    cfmakeraw(&tty);
- 
-    /* Flush Port, then applies attributes */
-    tcflush( port_fd, TCIFLUSH );
-    if ( tcsetattr ( port_fd, TCSANOW, &tty ) != 0) {
-        std::cout << "Error " << errno << " from tcsetattr" << std::endl;
-        return -1;
-    }
- 
-    return port_fd;
-}
- 
-std::string readPort(int _port_fd){
-    int n = 0;
-    char buf = '\0';
-    std::string response = "";
-    do {
-        n = read( _port_fd, &buf, 1 );
-        response += buf;
-    } while( buf != '\r' && buf != '\n' && n > 0);
- 
-    if (n < 0) {
-        return "ERROR";
-    } else if (n == 0) {
-        return "EMPTY";
-    } else {
-        return response;
-    }
-}
- 
-std::vector<std::string> splitString(const std::string &_source, const std::string &_delimiter = "", bool _ignoreEmpty = false) {
-    std::vector<std::string> result;
-    if (_delimiter.empty()) {
-        result.push_back(_source);
-        return result;
-    }
-    std::string::const_iterator substart = _source.begin(), subend;
-    while (true) {
-        subend = search(substart, _source.end(), _delimiter.begin(), _delimiter.end());
-        std::string sub(substart, subend);
+GPSService::GPSService() : gps("localhost", DEFAULT_GPSD_PORT), update(true) {}
+GPSService::~GPSService() {}
+
+std::thread GPSService::start() {
         
-        if (!_ignoreEmpty || !sub.empty()) {
-            result.push_back(sub);
-        }
-        if (subend == _source.end()) {
-            break;
-        }
-        substart = subend + _delimiter.size();
+    return std::thread(&GPSService::loop, this);
+
+}
+
+void GPSService::stop() {
+    this->update.store(false);
+}
+
+float GPSService::getLatitude() {
+    return this->lat.load();
+}
+
+float GPSService::getLongitude() {
+    return this->lon.load();
+}
+
+float GPSService::getSpeed() {
+    return this->speed.load();
+}
+
+int GPSService::getHour() {
+    return this->hour.load();
+}
+
+int GPSService::getMinute() {
+    return this->minute.load();
+}
+
+void GPSService::loop() {
+        
+    if (gps.stream(WATCH_ENABLE | WATCH_JSON) == nullptr) {
+        std::cerr << "No GPSD running.\n";
+        return;
     }
-    return result;
-}
- 
-int toInt(const std::string &_intString) {
-    int x = 0;
-    std::istringstream cur(_intString);
-    cur >> x;
-    return x;
-}
- 
-float toFloat(const std::string &_floatString) {
-    float x = 0;
-    std::istringstream cur(_floatString);
-    cur >> x;
-    return x;
-}
- 
-void getLocation(int _port_fd, float *lat, float *lon){
-    std::string line = readPort(_port_fd);
-    if (line.find("GPRMC") != std::string::npos){
-        // std::cout << line << std::endl;
-        std::vector<std::string> data = splitString(line,",");
- 
-        // If got a FIX
-        if (data[2] == "A"){
-            // parse the data
-            *lat = 0.0f;
-            *lon = 0.0f;
- 
-            // LATITUD
-            *lat = toInt(data[3].substr(0,2));
-            *lat += toFloat(data[3].substr(2))/60.0;
-            if(data[4]=="S")
-                *lat *= -1.0;
- 
-            // LONGITUD
-            *lon = toInt(data[5].substr(0,3));
-            *lon += toFloat(data[5].substr(3))/60.0;
-            if(data[6]=="W")
-                *lon *= -1.0;
+    
+    constexpr auto kWaitingTime{1000000};  // 1000000 is 1 second
+
+    for (;;) {
+            
+        if(!update.load()) {
+            return;
         }
-    }
-}
-
-bool getLocation(float *_lat, float *_lon){
-    static int fd = -1;
-    static float lat = 0.0;
-    static float lon = 0.0;
-
-    if (fd<0) {
-        //fd = openPort("/dev/ttyAMA0");
-        fd = openPort("/dev/ttyACM0");
-    }
-
-    if (fd>=0) {
-        float tmpLat = 0.0;
-        float tmpLon = 0.0;
-
-        getLocation(fd,&tmpLat,&tmpLon);
-
-        if (tmpLat != 0.0 && tmpLon != 0.0){
-            lat = tmpLat;
-            lon = tmpLon;
+        
+        if (!gps.waiting(kWaitingTime)) {
+            continue;
         }
 
-        if  (lat != 0.0 && lon != 0.0) { 
-            *_lat = lat;
-            *_lon = lon;
-            return true;
-        } else {
-            return false;
+        struct gps_data_t* gpsd_data;
+
+        if ((gps.read()) == nullptr) {
+            std::cerr << "GPSD read error.\n";
+            return;
         }
-    } else {
-        return false;
+
+        while (((gpsd_data = gps.read()) == nullptr) || (gpsd_data->fix.mode < MODE_2D)) {
+            // Do nothing until fix, block execution for 1 second (busy wait mitigation)
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+
+        const auto latitude{gpsd_data->fix.latitude};
+        const auto longitude{gpsd_data->fix.longitude};
+        const auto hdop{gpsd_data->dop.hdop};
+        const auto vdop{gpsd_data->dop.vdop};
+        const auto pdop{gpsd_data->dop.pdop};
+        const auto s_vis{gpsd_data->satellites_visible};
+        const auto s_used{gpsd_data->satellites_used};
+        //const auto time_str{TimespecToTimeStr(gpsd_data->fix.time, ISO_8601)};  // you can change the 2nd argument to LOCALTIME, UTC, UNIX or ISO8601
+
+        //std::cout << std::setprecision(8) << std::fixed;  // set output to fixed floating point, 8 decimal precision
+        //std::cout << "GPSD:" << gpsd_data->fix.time << "," << latitude << "," << longitude << "," << hdop << "," << vdop << "," << pdop << "," << s_vis << "," << s_used << '\n';
+    
+        this->lat.store(latitude);
+        this->lon.store(longitude);
+        this->speed.store(gpsd_data->fix.speed);
+        
+        
+        //get the starting value of clock
+        //clock_t start = clock();
+        tm* my_time;
+
+
+        //get current time in format of time_t
+        time_t t = gpsd_data->fix.time;//time(NULL);
+
+
+        //show the value stored in t
+        //std::cout << "Value of t " << t << std::endl;
+
+        //convert time_t to char*
+        //char* charTime = ctime(&t);
+
+        //display current time
+        //std::cout << "Now is " << charTime << std::endl;
+
+        //convert time_t to tm
+        my_time = localtime(&t);
+
+        //get only hours and minutes
+        //char buf[80] = {0};
+        //strftime(buf, 10, "%I:%M%p", my_time);
+        //std::string test(buf);
+        
+        //std::cout << test << std::endl;
+        
+        this->hour.store(my_time->tm_hour);
+        this->minute.store(my_time->tm_min);
+    
+    
     }
 }

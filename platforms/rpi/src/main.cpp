@@ -31,6 +31,7 @@ Hud hud;
 #define KEY_LEFT     97     // a
 #define KEY_DOWN     115    // s
 #define KEY_RIGHT    100    // d
+#define KEY_CAMERA   99     // c
 
 using namespace Tangram;
 
@@ -111,6 +112,60 @@ struct Timer {
     }
 };
 
+std::atomic<bool> enableMainScreen;
+std::atomic<bool> enableCamera;
+std::atomic<float> fuelFrac;
+
+/*
+class ToggleScreen : public Subscriber {
+public:
+    virtual void ioEvent(IOState state) {
+        std::cout << "Toggle screen" << std::endl;
+        enableMainScreen.store(state.value);
+        onKeyPress(KEY_ZOOM_OUT);
+    }
+};
+*/
+
+class ZoomOut : public Subscriber {
+public:
+    virtual void ioEvent(IOState state) {
+        if(state.value == 1) {
+            std::cout << "Zoom out screen" << std::endl;
+            onKeyPress(KEY_ZOOM_OUT);
+        }
+    }
+};
+
+class ZoomIn : public Subscriber {
+public:
+    virtual void ioEvent(IOState state) {
+        if(state.value == 1) {
+            std::cout << "Zoom in screen" << std::endl;
+            onKeyPress(KEY_ZOOM_IN);
+        }
+    }
+};
+
+class CameraToggle : public Subscriber {
+    virtual void ioEvent(IOState state) {
+        if(state.value == 1) {
+            std::cout << "Camera toggle" << std::endl;
+            onKeyPress(KEY_CAMERA);
+        }
+    }    
+};
+
+class FuelAmount : public Subscriber {
+    virtual void ioEvent(IOState state) {
+        //if(state.value == 1) {
+            //std::cout << "Fuel amount = " << state.value << std::endl;
+            fuelFrac.store(((float) state.value) / 255.0f);
+            //onKeyPress(KEY_CAMERA);
+        //}
+    }    
+};
+
 int main(int argc, char **argv) {
 
     printf("Starting an interactive map window. Use keys to navigate:\n"
@@ -130,8 +185,14 @@ int main(int argc, char **argv) {
 
     LaunchOptions options = getLaunchOptions(argc, argv);
     
+    GPSService gps;
+    std::thread gps_thread = gps.start();
+    
     int pi = pigpio_start(0, 0);
     pBoard = new IOBoard(pi, 30);
+    
+    fuelFrac.store(0.75f);
+    enableCamera.store(false);
     
     std::shared_ptr<PrintEvent> pe = std::make_shared<PrintEvent>();
     for(int i = 0; i < 16; i++) {
@@ -139,7 +200,17 @@ int main(int argc, char **argv) {
 	}
     
     std::thread board_thread = pBoard->spawn();
-
+    
+    std::shared_ptr< ZoomIn > zoomIn = std::make_shared<ZoomIn>();
+    std::shared_ptr< ZoomOut > zoomOut = std::make_shared<ZoomOut>();
+    std::shared_ptr< CameraToggle > cameraOn = std::make_shared<CameraToggle>();
+    std::shared_ptr< FuelAmount > fuelAmt = std::make_shared<FuelAmount>();
+    
+    pBoard->subscribe(12, zoomOut);
+    pBoard->subscribe(11, zoomIn);
+    pBoard->subscribe(10, cameraOn);
+    pBoard->subscribe(16, fuelAmt);
+    
     UrlClient::Options urlClientOptions;
     urlClientOptions.maxActiveTasks = 10;
 
@@ -183,7 +254,10 @@ int main(int argc, char **argv) {
         map->setZoom(options.zoom);
     }
 
+    std::cout << "Hud init" << std::endl;
     hud.init();
+    
+    std::cout << "Hud init cursor" << std::endl;    
     hud.setDrawCursor(true);
     
     TextDisplay::Instance().init();
@@ -193,24 +267,55 @@ int main(int argc, char **argv) {
 
     std::vector< std::string > info;
     info.push_back("test");
-
+    
+    unsigned int opacity = 0xFF;
+    int cameraPID = 0;
+    
+    std::cout << "Loop start" << std::endl;
     while (bUpdate) {
         pollInput();
         double dt = timer.deltaSeconds();
-        if (getRenderRequest() || map->getPlatform().isContinuousRendering() ) {
-            setRenderRequest(false);
-            float lat = 32, lon = -117;
-            
-            if(getLocation(&lat, &lon)) {
-            //    map->getView().setPosition(lat, lon);
-                std::cout << "lat = " << lat << ", lon = " << lon << std::endl;
+        if(enableCamera.load()) {
+            if(opacity != 0x00) {
+                opacity = 0x00;
+                std::cout << "Setting opacity to " << opacity << std::endl;
+                setSurfaceOpacity(opacity);
+                swapSurface();
+                int pid = fork();
+                if(pid) {
+                    cameraPID = pid;
+                }else{
+                    std::cout << "starting camera stream" << std::endl;
+                    system("gst-launch-1.0 -v tcpclientsrc host=192.168.86.242 port=9000 ! decodebin ! videoconvert ! fbdevsink");
+                    std::cout << "stream finished" << std::endl;
+                    return 0;
+                }
             }
-            map->setPosition(lon, lat);
-            
-            map->update(dt);
-            map->render();
-            hud.draw(map);
-            TextDisplay::Instance().draw(map->getRenderState(), info);
+        }else{
+            if(opacity != 0xFF) {
+                opacity = 0xFF;
+                if(cameraPID) {
+                    killpg(cameraPID, SIGKILL);
+                    system("killall gst-launch-1.0");
+                    cameraPID = 0;
+                }
+                std::cout << "Setting opacity to " << opacity << std::endl;
+                setSurfaceOpacity(opacity);
+            }
+            //enableSurface();
+            if (getRenderRequest() || map->getPlatform().isContinuousRendering() ) {
+                setRenderRequest(false);
+                float lat = gps.getLatitude();
+                float lon = gps.getLongitude();
+                if(lat != 0 && lon != 0) {
+                    map->setPosition(lon, lat);
+                }
+                map->update(dt);
+                hud.setFuel(fuelFrac.load());
+                map->render();
+                hud.draw(map, gps);
+                TextDisplay::Instance().draw(map->getRenderState(), info);
+            }
             swapSurface();
         }
         pBoard->processEvents();
@@ -220,15 +325,36 @@ int main(int argc, char **argv) {
         map = nullptr;
     }
 
+    std::cout << "exit 1" << std::endl;
+    
     TextDisplay::Instance().deinit();
 
+    std::cout << "exit 2" << std::endl;
+
     destroySurface();
+    
+    std::cout << "exit 3" << std::endl;
+    
     pBoard->set(-1, -1);
+    
+    std::cout << "exit 3a" << std::endl;
+    
     board_thread.join();
+
+    std::cout << "exit 3b" << std::endl;
+    
+    gps.stop();
+    gps_thread.join();
+
+    std::cout << "exit 4" << std::endl;
     
     delete pBoard;
+
+    std::cout << "exit 5" << std::endl;
     
     pigpio_stop(pi);
+
+    std::cout << "exit 6" << std::endl;
     
     return 0;
 }
@@ -257,6 +383,10 @@ void onKeyPress(int _key) {
             break;
         case KEY_ESC:
             bUpdate = false;
+            break;
+        case KEY_CAMERA:
+            bool cur = enableCamera.load();
+            enableCamera.store(!cur);
             break;
         default:
             logMsg(" -> %i\n",_key);

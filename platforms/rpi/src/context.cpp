@@ -264,6 +264,9 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 //==============================================================================
+
+DISPMANX_ELEMENT_HANDLE_T dispman_element;
+
 void createSurface(int x, int y, int width, int height) {
 
     // Start OpenGL ES
@@ -347,13 +350,13 @@ void createSurface(int x, int y, int width, int height) {
     // Configure the display layer to have full opacity.
     VC_DISPMANX_ALPHA_T dispman_alpha = { 0 };
     dispman_alpha.flags = DISPMANX_FLAGS_ALPHA_FIXED_ALL_PIXELS;
-    dispman_alpha.opacity = 0xFF;
+    dispman_alpha.opacity = 0xF0;//0xFF;
     dispman_alpha.mask = NULL;
 
     DISPMANX_DISPLAY_HANDLE_T dispman_display = vc_dispmanx_display_open(0);
     DISPMANX_UPDATE_HANDLE_T dispman_update = vc_dispmanx_update_start(0);
 
-    DISPMANX_ELEMENT_HANDLE_T dispman_element = vc_dispmanx_element_add(
+    dispman_element = vc_dispmanx_element_add(
         dispman_update,
         dispman_display,
         0 /*layer*/,
@@ -388,6 +391,36 @@ void createSurface(int x, int y, int width, int height) {
 
 void swapSurface() {
     eglSwapBuffers(display, surface);
+}
+
+#define ELEMENT_CHANGE_LAYER          (1<<0)
+#define ELEMENT_CHANGE_OPACITY        (1<<1)
+
+void setSurfaceOpacity(unsigned int alpha) {
+    
+    VC_RECT_T dst_rect = { 0 };
+    dst_rect.x = viewport.x;
+    dst_rect.y = viewport.y;
+    dst_rect.width = viewport.width;
+    dst_rect.height = viewport.height;
+
+    VC_RECT_T src_rect = { 0 };
+    src_rect.x = viewport.x;
+    src_rect.y = viewport.y;
+    src_rect.width = viewport.width << 16;
+    src_rect.height = viewport.height << 16;
+    
+    VC_DISPMANX_ALPHA_T dispman_alpha = { 0 };
+    dispman_alpha.flags = DISPMANX_FLAGS_ALPHA_FIXED_ALL_PIXELS;
+    dispman_alpha.opacity = alpha;
+    dispman_alpha.mask = NULL;
+
+    DISPMANX_DISPLAY_HANDLE_T dispman_display = vc_dispmanx_display_open(0);
+    DISPMANX_UPDATE_HANDLE_T dispman_update = vc_dispmanx_update_start(0);
+
+    vc_dispmanx_element_change_attributes(dispman_update, dispman_element, ELEMENT_CHANGE_OPACITY | ELEMENT_CHANGE_LAYER, 0, alpha, &dst_rect, &src_rect, 0, 0);
+    
+    vc_dispmanx_update_submit_sync(dispman_update);
 }
 
 void destroySurface() {

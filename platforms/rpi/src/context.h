@@ -7,6 +7,7 @@ void createSurface(int x, int y, int width, int height);
 void pollInput();
 void swapSurface();
 void destroySurface();
+void setSurfaceOpacity(unsigned int alpha);
 
 // SET
 void setWindowSize(int width, int height);

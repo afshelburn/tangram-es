@@ -20,6 +20,7 @@ add_executable(tangram
   platforms/rpi/src/hud/slideZoom.cpp
   platforms/rpi/src/hud/rectangle.cpp
   platforms/rpi/src/hud/hudText.cpp
+  platforms/rpi/src/hud/guage.cpp
   platforms/common/urlClient.cpp
   platforms/common/linuxSystemFontHelper.cpp
   platforms/common/platform_gl.cpp
@@ -48,6 +49,7 @@ target_link_libraries(tangram
   atomic
   pigpiod_if2
   ftgl
+  gps
   /opt/vc/lib/libbcm_host.so
   /opt/vc/lib/libbrcmEGL.so
   /opt/vc/lib/libbrcmGLESv2.so

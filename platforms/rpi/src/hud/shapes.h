@@ -116,7 +116,7 @@ inline std::shared_ptr<HudMesh> getTriangle(const glm::vec2& pos, float width, f
         angle += step;
     }
 
-    std::shared_ptr<HudMesh> mesh(new HudMesh(vertexLayout, GL_LINE_LOOP));
+    std::shared_ptr<HudMesh> mesh(new HudMesh(vertexLayout, GL_TRIANGLES));
     Tangram::MeshData<LineVertex> md;
     md.indices = indices;
     md.vertices = vertices;

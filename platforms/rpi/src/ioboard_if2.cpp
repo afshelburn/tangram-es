@@ -16,8 +16,8 @@
 #include <algorithm>
 #include <memory>
 #include <map>
-#include <vector>
 #include <string>
+#include <vector>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -368,7 +368,7 @@ protected:
 
 class App : public PrintEvent {
 public:
-	App(IOBoard& board, int freq) : board(board) {
+	App(std::string name, IOBoard& board, int freq) : board(board), name(name) {
 		delay = (int) (1000.0 / (float) freq);
 	}
 	virtual ~App() {}
@@ -379,6 +379,7 @@ public:
 	}
 	
 	virtual void ioEvent(IOState state) {
+		std::cout << name << " event:" << std::endl;
 		PrintEvent::ioEvent(state);
 		board.set(state.pin, state.value);
 	}
@@ -405,20 +406,81 @@ protected:
 private:
 	IOBoard& board;
 	int delay;
+	std::string name;
 };
 
-/*g++ ioboard_if2.cpp -std=c++17 -lpthread -lpigpiod_if2
+int app1(int pi) {
+	
+	//IOBoard board(30);
+	std::cout << "GPIO Init" << std::endl;
+	IOBoard board(pi, 30);
+	
+	std::shared_ptr< App > app = std::make_shared<App>("App1", board, 60);
+	
+	for(int i = 0; i < 16; i++) {
+		board.subscribe(i, app);
+	}
+	
+	std::thread t = board.spawn();//(&IOBoard::loop, board);//IOBoard(pi, 1));
+	
+	std::cout << "Board thread started" << std::endl;
+	
+	std::thread a = app->startMainLoop();
+	
+	std::cout << "App thread started" << std::endl;
+	
+	int pid = fork();
+	if(pid) {
+		
+	}else{
+		
+		std::cout << "creating app 2" << std::endl;
+		std::shared_ptr< App > app2 = std::make_shared<App>("App2", board, 60);
+	
+		std::cout << "subscribing" << std::endl;
+		for(int i = 0; i < 16; i++) {
+			board.subscribe(i, app2);
+		}
+		
+		std::cout << "starting loop" << std::endl;
+		//std::thread b = app2->startMainLoop();
+		while(true) {
+			sleep(1);
+		}
+		
+	}
+	
+	t.join();
+	a.join();
+	//b.join();
+	
+	std::cout << "Stopping pigpio" << std::endl;
+	return 0;
+}
 int main(int argc, char **argv) {
 
 	std::cout << "Hello world!" << std::endl;
 
-	int pi = pigpio_start(0, 0);
+	int pi = 0;
+
+	int port = 0;
+    if(argc > 1) {
+		port = atoi(argv[1]);
+		std::cout << "Using port " << port << std::endl;
+		pi = pigpio_start(0, argv[1]);
+	}else{
+		pi = pigpio_start(0, 0);
+	}
 	
+	
+	return app1(pi);
+	
+	/*
 		//IOBoard board(30);
 	std::cout << "GPIO Init" << std::endl;
 	IOBoard board(pi, 30);
 	
-	std::shared_ptr< App > app = std::make_shared<App>(board, 60);
+	std::shared_ptr< App > app = std::make_shared<App>("foo", board, 60);
 	
 	for(int i = 0; i < 16; i++) {
 		board.subscribe(i, app);
@@ -436,11 +498,12 @@ int main(int argc, char **argv) {
 	a.join();
 	
 	std::cout << "Stopping pigpio" << std::endl;
+	*/
 	
 	pigpio_stop(pi);
 
 	return 0;
 }
-*/
+
 
 

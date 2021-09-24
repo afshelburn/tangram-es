@@ -16,6 +16,8 @@
 
 void SlideZoom::init(){
 
+    std::cout << "zoom init a" << std::endl;
+    
     zoom = 0;
     slider = 0;
 
@@ -57,6 +59,8 @@ void SlideZoom::init(){
         gl_Position = u_modelViewProjectionMatrix * v_position;
     });
 
+    std::cout << "zoom init b" << std::endl;
+
     // Universal Fragment Shader
     frag += STRINGIFY(
     uniform vec2 u_resolution;
@@ -69,17 +73,24 @@ void SlideZoom::init(){
         gl_FragColor = vec4(vec3(1.0),v_alpha)*(mask.x*mask.y);
     });
 
+    std::cout << "zoom init b1" << std::endl;
     m_fixShader = std::shared_ptr<Tangram::ShaderProgram>(new Tangram::ShaderProgram());
+    std::cout << "zoom init b2" << std::endl;
     m_fixShader->setShaderSource(fixVertShader, frag);
-
+    
+    std::cout << "zoom init b0" << std::endl;
+    
     m_trnShader = std::shared_ptr<Tangram::ShaderProgram>(new Tangram::ShaderProgram());
     m_trnShader->setShaderSource(trnVertShader, frag);
 
+    std::cout << "zoom init b1" << std::endl;
+    
     m_verticalRulerMeshA = getVerticalRulerMesh(-getWindowHeight(),getWindowHeight(),5.0f,getWindowWidth()*0.0131125);
     m_verticalRulerMeshB = getVerticalRulerMesh(-getWindowHeight(),getWindowHeight(),50.0f,getWindowWidth()*0.0194525);
 
     m_triangle = getTriangle(getWindowHeight()*0.01);
 
+    std::cout << "zoom init c" << std::endl;
     // Make fixed lines
     {
         std::shared_ptr<Tangram::VertexLayout> vertexLayout = std::shared_ptr<Tangram::VertexLayout>(new Tangram::VertexLayout({
@@ -109,6 +120,8 @@ void SlideZoom::init(){
         md.indices = indices;
         md.vertices = vertices;
         md.offsets.emplace_back(indices.size(), vertices.size());
+        
+        std::cout << "zoom init d" << std::endl;
         
         mesh->compile(md);
 
@@ -144,7 +157,7 @@ void SlideZoom::draw(Tangram::RenderState& rs, std::unique_ptr<Tangram::Map>& pM
 
     m_trnShader->use(rs);
     
-    std::cout << "Zoom = " << zoom << std::endl;
+    //std::cout << "Zoom = " << zoom << std::endl;
                                                  //was 15.
     m_trnShader->setUniformf(rs, trn_u_offset, x-15., getWindowHeight()*0.5-(zoom-9)*2.1f) ;
     m_trnShader->setUniformf(rs, trn_u_mask, 0, 0, getWindowWidth(), getWindowHeight());

@@ -29,6 +29,12 @@ public:
 		this->size = size;
 	}
 	
+	void setText(std::string text, glm::vec2 pos, float scale) {
+		this->text = text;
+		this->pos = pos;
+		this->scale = scale;
+	}
+	
 	void setText(std::string text) {
 		this->text = text;
 	}
@@ -39,6 +45,8 @@ protected:
 	std::string font;
 	std::string text;
 	int size;
+	glm::vec2 pos;
+	float scale;
 	
 	std::shared_ptr<Tangram::ShaderProgram>  m_textShader;
 	std::map<char, Character> Characters;
