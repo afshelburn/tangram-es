@@ -231,6 +231,9 @@ void Hud::draw(std::unique_ptr<Tangram::Map>& pMap, GPSService& gps){
     m_fuel.draw(rs, pMap);
     
     // Zoom
+    if(pMap->getZoom() != m_zoom.zoom) {
+        std::cout << "Setting zoom to " << pMap->getZoom() << std::endl;
+    }
     m_zoom.zoom = pMap->getZoom();
     m_zoom.draw(rs, pMap);
     

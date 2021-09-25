@@ -83,7 +83,7 @@ void Guage::init(){
     
     //m_verticalRulerMesh = getVerticalRulerMesh(-getWindowHeight(),getWindowHeight(),5.0f,getWindowWidth()*0.0131125);
     m_verticalMinorRulerMesh = getVerticalRulerMesh(-100,125,25.0f,getWindowWidth()*0.0194525);
-	m_verticalMajorRulerMesh = getVerticalRulerMesh(-100,125,50.0f,getWindowWidth()*0.0294525);
+	m_verticalMajorRulerMesh = getVerticalRulerMesh(-100,150,50.0f,getWindowWidth()*0.0294525);
 
     m_triangle = getTriangle(getWindowHeight()*0.05);
 
@@ -112,7 +112,13 @@ void Guage::draw(Tangram::RenderState& rs, std::unique_ptr<Tangram::Map>& pMap){
     
     //glPushAttrib(GL_LINE_BIT);
     
-    m_fixShader->setUniformf(rs, trn_u_color, 0.0f, 1.0f, 0.0f, 1.0f);
+    if(value < 0.125f) {
+		m_fixShader->setUniformf(rs, trn_u_color, 1.0f, 0.0f, 0.0f, 1.0f);
+    }else if(value < 0.25f) {
+		m_fixShader->setUniformf(rs, trn_u_color, 1.0f, 1.0f, 0.0f, 1.0f);
+	}else{
+		m_fixShader->setUniformf(rs, trn_u_color, 0.0f, 1.0f, 0.0f, 1.0f);
+	}
     glLineWidth(2.0f);
     m_triangle->draw(rs, *(m_fixShader.get()));
 

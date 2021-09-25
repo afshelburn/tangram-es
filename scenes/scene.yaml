@@ -103,8 +103,8 @@ styles:
 
 sources:
     osm:
-        type: MVT
-        url: https://tile.nextzen.org/tilezen/vector/v1/256/all/{z}/{x}/{y}.mvt
+        type: GeoJSONTiles
+        url:  file:///home/pi/tiles/{z}-{x}-{y}.json
         max_zoom: 16
         url_params:
             api_key: global.sdk_api_key
